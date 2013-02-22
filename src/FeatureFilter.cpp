@@ -5,7 +5,7 @@
  *      Author: link
  */
 
-#include "/home/link/programos/MGR/src/FeatureFilter.hpp"
+#include "FeatureFilter.hpp"
 
 FeatureFilter::FeatureFilter() {
 	// TODO Auto-generated constructor stub

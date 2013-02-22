@@ -3,5 +3,6 @@
 #include "VisualOdometer.hpp"
 
 int main(){
+	VisualOdometer odo;
   return 0;
 }

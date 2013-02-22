@@ -5,7 +5,7 @@
  *      Author: link
  */
 
-#include "/home/link/programos/MGR/src/ImageEdgeFilter.hpp"
+#include "ImageEdgeFilter.hpp"
 
 ImageEdgeFilter::ImageEdgeFilter() {
 	// TODO Auto-generated constructor stub

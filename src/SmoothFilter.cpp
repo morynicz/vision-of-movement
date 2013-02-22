@@ -5,7 +5,7 @@
  *      Author: link
  */
 
-#include "/home/link/programos/MGR/src/SmoothFilter.hpp"
+#include "SmoothFilter.hpp"
 
 SmoothFilter::SmoothFilter() {
 	// TODO Auto-generated constructor stub
