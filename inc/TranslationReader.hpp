@@ -12,12 +12,14 @@
 #include <list>
 #include <opencv2/core/core.hpp>
 
+#include "FeatureExtractor.hpp"
 #include "FeatureTracker.hpp"
 
 class TranslationReader {
 protected:
 	std::vector<std::list<cv::Point2f> > _trackedFeatures;
 	FeatureTracker *_tracker;
+	FeatureExtractor *_extractor;
 	cv::Mat _oldFrame;
 public:
 	TranslationReader();

@@ -31,20 +31,20 @@
 #include <cmath>
 
 class VisualOdometer {
-	FeatureExtractor *_featureExtractor;
 	RotationReader *_rotationReader;
 	TranslationReader *_translationReader;
 	std::list<FeatureFilter*> _filters;
 	std::vector<std::list<cv::Point2f> > trackedFeatures;
-	double _featuresNumber;
-	double _horizonHeight;
-	double _deadZoneWidth;
+	int _featuresNumber;
+	int _horizonHeight;
+	int _deadZoneWidth;
 public:
 	VisualOdometer();
-	VisualOdometer(const FeatureExtractor &extractor,
-			const FeatureTracker &tracker, const RotationReader &rotationReader,
+	VisualOdometer(const RotationReader &rotationReader,
 			const TranslationReader &translationReader,
-			const std::list<FeatureFilter> filters);
+			const std::list<FeatureFilter*> filters,
+			const int &horizonHeight, const int &deadZoneWidth,
+			const int &featuresNumber);
 	cv::Point3f calculateDisplacement(const cv::Mat &newFrame);
 	virtual ~VisualOdometer();
 };

@@ -15,7 +15,8 @@ class BirdsEyeTranslationReader: public TranslationReader {
 	std::vector<cv::Point2f> _translations;
 public:
 	BirdsEyeTranslationReader(const BirdsEyeTranslationReader &toCopy);
-	BirdsEyeTranslationReader(const cv::Mat &homography,const FeatureTracker &tracker);
+	BirdsEyeTranslationReader(const cv::Mat &homography,
+			const FeatureExtractor &extractor, const FeatureTracker &tracker);
 	virtual TranslationReader *constructCopy() const;
 	virtual cv::Point2f readTranslation(const cv::Mat &newFrame);
 	cv::Mat getBirdsEyeView(const cv::Mat &input);

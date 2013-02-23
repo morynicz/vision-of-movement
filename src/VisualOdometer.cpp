@@ -11,12 +11,13 @@
 #include "LucasCandaePyramidTracker.hpp"
 #include "BirdsEyeTranslationReader.hpp"
 
-
 VisualOdometer::VisualOdometer() {
-	_featureExtractor = new ShiThomasFeatureExtractor();
 	_filters.clear();
-	_translationReader = new BirdsEyeTranslationReader(cv::Mat::eye(3,3,CV_32F),LucasCandaePyramidTracker());
-	_rotationReader = new TangentRotationReader(LucasCandaePyramidTracker());
+	_translationReader = new BirdsEyeTranslationReader(
+			cv::Mat::eye(3, 3, CV_32F), ShiThomasFeatureExtractor(),
+			LucasCandaePyramidTracker());
+	_rotationReader = new TangentRotationReader(ShiThomasFeatureExtractor(),
+			LucasCandaePyramidTracker());
 
 	_deadZoneWidth = 0;
 	_horizonHeight = 0.5;
@@ -25,9 +26,6 @@ VisualOdometer::VisualOdometer() {
 }
 
 VisualOdometer::~VisualOdometer() {
-	if (NULL != _featureExtractor) {
-		delete _featureExtractor;
-	}
 	if (NULL != _translationReader) {
 		delete _translationReader;
 	}
@@ -35,11 +33,31 @@ VisualOdometer::~VisualOdometer() {
 		delete _rotationReader;
 	}
 
-	for (std::list<FeatureFilter*>::iterator it=_filters.begin();_filters.end()!=it;++it) {
+	for (std::list<FeatureFilter*>::iterator it = _filters.begin();
+			_filters.end() != it; ++it) {
 		if (NULL != *it) {
 			delete *it;
 		}
 	}
-	// TODO Auto-generated destructor stub
 }
 
+VisualOdometer::VisualOdometer(const RotationReader &rotationReader,
+		const TranslationReader &translationReader,
+		const std::list<FeatureFilter*> filters, const int &horizonHeight,
+		const int &deadZoneWidth, const int &featuresNumber) :
+		_featuresNumber(featuresNumber), _horizonHeight(horizonHeight),
+		_deadZoneWidth(deadZoneWidth) {
+	_translationReader = translationReader.constructCopy();
+	_rotationReader = rotationReader.constructCopy();
+
+	for (std::list<FeatureFilter*>::const_iterator it = filters.begin();
+			filters.end() != it; ++it) {
+		_filters.push_back(*it);
+	}
+}
+
+cv::Point3f VisualOdometer::calculateDisplacement(const cv::Mat &newFrame) {
+	cv::Point3f result(0, 0, 0);
+
+	return result;
+}

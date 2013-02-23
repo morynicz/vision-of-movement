@@ -7,10 +7,11 @@
 
 #include "BirdsEyeTranslationReader.hpp"
 
-BirdsEyeTranslationReader::BirdsEyeTranslationReader(
-		const cv::Mat &homography,const FeatureTracker &tracker) {
+BirdsEyeTranslationReader::BirdsEyeTranslationReader(const cv::Mat &homography,
+		const FeatureExtractor &extractor, const FeatureTracker &tracker) {
 	_homography = homography.clone();
 	_tracker = tracker.constructCopy();
+	_extractor = extractor.constructCopy();
 }
 
 BirdsEyeTranslationReader::BirdsEyeTranslationReader(
@@ -21,7 +22,7 @@ BirdsEyeTranslationReader::BirdsEyeTranslationReader(
 }
 
 BirdsEyeTranslationReader::~BirdsEyeTranslationReader() {
-	if(NULL!=_tracker){
+	if (NULL != _tracker) {
 		delete _tracker;
 	}
 }

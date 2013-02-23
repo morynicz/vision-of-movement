@@ -7,29 +7,35 @@
 
 #include "TangentRotationReader.hpp"
 
-TangentRotationReader::TangentRotationReader(const FeatureTracker &tracker) {
+TangentRotationReader::TangentRotationReader(const FeatureExtractor &extractor,
+		const FeatureTracker &tracker) {
 	_tracker = tracker.constructCopy();
 	_trackedFeatures.clear();
-
+	_extractor=extractor.constructCopy();
 }
 
 TangentRotationReader::~TangentRotationReader() {
-	if(NULL!=_tracker){
+	if (NULL != _tracker) {
 		delete _tracker;
+	}
+	if (NULL != _extractor) {
+		delete _extractor;
 	}
 }
 
-TangentRotationReader::TangentRotationReader(const TangentRotationReader &toCopy){
+TangentRotationReader::TangentRotationReader(
+		const TangentRotationReader &toCopy) {
 	_tracker = toCopy._tracker;
 	_trackedFeatures = toCopy._trackedFeatures;
+	_extractor = toCopy._extractor;
 }
 
-RotationReader *TangentRotationReader::constructCopy() const{
+RotationReader *TangentRotationReader::constructCopy() const {
 	return new TangentRotationReader(*this);
 }
 
-float TangentRotationReader::readRotation(const cv::Mat &newFrame){
-	float result=0;
+float TangentRotationReader::readRotation(const cv::Mat &newFrame) {
+	float result = 0;
 
 	return result;
 }
