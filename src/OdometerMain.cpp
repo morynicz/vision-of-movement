@@ -106,7 +106,50 @@ void getCameraParameters(const std::string &fileName,
 
 }
 
-//cv::Mat getHomography(cv::VideoCapture &capture,)
+cv::Mat getHomography(cv::VideoCapture &capture,
+		const std::vector<cv::Mat> &rectificationMaps, const int &horizon,
+		const int &deadZone, cv::Size &boardSize,cv::Size &imageSize) {
+	cv::Mat result;
+
+	cv::Mat newIn;
+	cv::Mat undistorted;
+	cv::Mat greyNewIn;
+	cv::Mat ground;
+
+	cv::Rect lowerRoi(cv::Point2f(0, horizon + deadZone),
+			cv::Size(imageSize.width, imageSize.height - horizon - deadZone));
+	bool found = false;
+	std::vector<cv::Point2f> corners;
+	int cornerCount = 0;
+	cv::namedWindow("ground", CV_WINDOW_NORMAL);
+	char control = ' ';
+	do {
+		capture >> newIn;
+		cv::remap(newIn, undistorted, rectificationMaps[0],
+				rectificationMaps[1], cv::INTER_LINEAR);
+		cv::cvtColor(undistorted, greyNewIn, CV_RGB2GRAY);
+		ground = greyNewIn(lowerRoi);
+		found = cv::findChessboardCorners(ground, boardSize, corners,
+				CV_CALIB_CB_FILTER_QUADS | CV_CALIB_CB_ADAPTIVE_THRESH
+						| CV_CALIB_CB_NORMALIZE_IMAGE);
+		//shown = undistorted.clone();
+		if (cornerCount > 0) {
+			drawChessboardCorners(undistorted, boardSize, corners, found);
+		}
+		drawDeadZoneHorizon(undistorted, horizon, deadZone);
+		imshow("ground", ground);
+		//imshow("main"), shown);
+		control = cv::waitKey(1);
+	} while (!found && 'q' != control);
+
+	if ('q' == control) {
+		cv::Exception ex(USER_TRIGGERED_EXIT, "user requested exit", __func__,
+				__FILE__, __LINE__);
+		throw ex;
+	}
+
+	return result;
+}
 
 int main() {
 
@@ -128,7 +171,9 @@ int main() {
 
 	cv::Mat homography;
 
-	cv::VideoCapture capture(1);
+	cv::Size boardSize(11, 7);
+
+	cv::VideoCapture capture(0);
 
 	ShiThomasFeatureExtractor extractor(qualityLevel, minDistance, blockSize,
 			winSizeShi, zeroZone, termCritShi);
@@ -145,6 +190,8 @@ int main() {
 
 	std::vector<cv::Mat> rectifyMaps;
 	cv::Size imageSize;
+
+	std::list<cv::Point3f> positions;
 	try {
 		getCameraParameters("../logitech.yaml", rectifyMaps, imageSize);
 		horizon = imageSize.height / 2;
@@ -152,13 +199,21 @@ int main() {
 		std::cerr << "raz";
 		calibrateParameters(capture, rectifyMaps, horizon, deadZone, imageSize);
 		std::cerr << "dwa";
+		homography = getHomography(capture, rectifyMaps, horizon, deadZone,
+				boardSize,imageSize);
+		std::cerr << "trzy";
 		VisualOdometer odo(rotationReader, transReader, filters, horizon,
 				deadZone, featuresNumber);
+
+
+
+
 	} catch (cv::Exception &ex) {
 		if (USER_TRIGGERED_EXIT == ex.code) {
 			return 0;
 		} else {
-			std::cerr << ex.what() << std::endl;
+			std::cerr << "EXCEPTION!!!!!!!!!!!" << std::endl << ex.what()
+					<< std::endl;
 			return 1;
 		}
 	}
