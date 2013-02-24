@@ -108,7 +108,9 @@ void getCameraParameters(const std::string &fileName,
 
 cv::Mat getHomography(cv::VideoCapture &capture,
 		const std::vector<cv::Mat> &rectificationMaps, const int &horizon,
-		const int &deadZone, cv::Size &boardSize,cv::Size &imageSize) {
+		const int &deadZone, cv::Size &boardSize, cv::Size &imageSize,
+		cv::Size &winSize, cv::Size &zeroZone, cv::TermCriteria termCriteria,
+		const float &squareSize) {
 	cv::Mat result;
 
 	cv::Mat newIn;
@@ -148,6 +150,65 @@ cv::Mat getHomography(cv::VideoCapture &capture,
 		throw ex;
 	}
 
+	cv::cornerSubPix(ground, corners, winSize, zeroZone, termCriteria);
+	cv::drawChessboardCorners(undistorted(lowerRoi), boardSize, corners, found);
+	cv::imshow("main", undistorted);
+	cv::waitKey(0);
+
+	std::vector<cv::Point2f> objPts(4), imgPts(4);
+	objPts[0].x = 0;
+	objPts[0].y = 0;
+	objPts[1].x = (boardSize.width - 1) * squareSize;
+	objPts[1].y = 0;
+	objPts[2].x = 0;
+	objPts[2].y = (boardSize.height - 1) * squareSize;
+	objPts[3].x = (boardSize.width - 1) * squareSize;
+	objPts[3].y = (boardSize.height - 1) * squareSize;
+	imgPts[0] = corners[0];
+	imgPts[1] = corners[boardSize.width - 1];
+	imgPts[2] = corners[(boardSize.height - 1) * boardSize.width];
+	imgPts[3] = corners[(boardSize.height) * boardSize.width - 1];
+
+	result = cv::getPerspectiveTransform(objPts, imgPts);
+//	perspTrans.at<double>(Point(2, 2)) = height;
+
+	return result;
+}
+
+bool horizontalPoint3Compare(cv::Point3f p1, cv::Point3f p2) {
+	return p1.x < p2.x;
+}
+
+bool verticalPoint3Compare(cv::Point3f p1, cv::Point2f p2) {
+	return p1.y < p2.y;
+}
+
+cv::Mat drawTraveledRoute(const std::list<cv::Point3f> &route) {
+	cv::Mat result;
+	cv::Point3f extremes[4];
+
+	extremes[0] = std::min_element(route.begin(), route.end(),
+			horizontalPoint3Compare);
+	extremes[1] = std::max_element(route.begin(), route.end(),
+			horizontalPoint3Compare);
+	extremes[2] = std::min_element(route.begin(), route.end(),
+			verticalPoint3Compare);
+	extremes[3] = std::max_element(route.begin(), route.end(),
+			verticalPoint3Compare);
+
+	cv::Size mapSize(extremes[1].x - extremes[1].x,
+			extremes[3].y - extremes[2].y);
+
+	std::list<cv::Point3f>::const_iterator bg = route.begin();
+	std::list<cv::Point3f>::const_iterator end = route.begin();
+
+	result = cv::Mat(mapSize, CV_8UC3);
+
+	for (++end; route.end() != end; ++end) {
+		cv::line(result, cv::Point2f(bg->x, bg->y), cv::Point2f(end->x, end->y),
+				CV_RGB(255,128,0), 1, CV_AA);
+	}
+
 	return result;
 }
 
@@ -171,7 +232,7 @@ int main() {
 
 	cv::Mat homography;
 
-	cv::Size boardSize(11, 7);
+	cv::Size boardSize(9, 6);
 
 	cv::VideoCapture capture(0);
 
@@ -191,7 +252,12 @@ int main() {
 	std::vector<cv::Mat> rectifyMaps;
 	cv::Size imageSize;
 
+	cv::Size winSizeHom(5, 5);
+	cv::Size zeroZoneHom(-1, -1);
+	cv::TermCriteria termCritHom(CV_TERMCRIT_EPS + CV_TERMCRIT_ITER, 40, 0.001);
+	float squareSize = 24;
 	std::list<cv::Point3f> positions;
+	cv::Point3f currentPosition(0, 0, 0);
 	try {
 		getCameraParameters("../logitech.yaml", rectifyMaps, imageSize);
 		horizon = imageSize.height / 2;
@@ -200,13 +266,26 @@ int main() {
 		calibrateParameters(capture, rectifyMaps, horizon, deadZone, imageSize);
 		std::cerr << "dwa";
 		homography = getHomography(capture, rectifyMaps, horizon, deadZone,
-				boardSize,imageSize);
+				boardSize, imageSize, winSizeHom, zeroZoneHom, termCritHom,
+				squareSize);
 		std::cerr << "trzy";
 		VisualOdometer odo(rotationReader, transReader, filters, horizon,
 				deadZone, featuresNumber);
 
+		char control = ' ';
+		cv::Mat input;
+		cv::namedWindow("main",CV_WINDOW_KEEPRATIO);
+		do {
+			cv::Point3f displacement;
+			capture >> input;
+			displacement = odo.calculateDisplacement(input);
+			currentPosition = currentPosition + displacement;
+			positions.push_front(currentPosition);
 
+			cv::Mat map = drawTraveledRoute(positions);
+			cv::imshow("main",map);
 
+		} while ('q' != control);
 
 	} catch (cv::Exception &ex) {
 		if (USER_TRIGGERED_EXIT == ex.code) {
