@@ -14,7 +14,9 @@ class BirdsEyeTranslationReader: public TranslationReader {
 	cv::Mat _homography;
 	std::vector<cv::Point2f> _translations;
 	unsigned int _maxFeatures;
-	std::vector<cv::Point2f> computeTranslationVectors();
+	cv::Point2f _rotationCenter;
+	std::vector<cv::Point2f> computeTranslationVectors(
+			const cv::Mat &rotationMatrix);
 	void filterBoarderFeatures();
 	void filterFeatures();
 public:
@@ -22,7 +24,8 @@ public:
 	BirdsEyeTranslationReader(const cv::Mat &homography,
 			const FeatureExtractor &extractor, const FeatureTracker &tracker,
 			const unsigned int& maxFeatures,
-			const std::list<FeatureFilter*>& filters);
+			const std::list<FeatureFilter*>& filters,
+			cv::Point2f rotationCentre);
 	virtual TranslationReader *constructCopy() const;
 	virtual cv::Point2f readTranslation(const cv::Mat &newFrame,
 			const double& rotation);
