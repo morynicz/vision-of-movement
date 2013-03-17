@@ -15,6 +15,67 @@
 #include <string>
 #include <vector>
 
+void printMatrix(const cv::Mat &arg) {
+	std::cerr << "dims: " << arg.cols << ' ' << arg.rows << std::endl;
+	std::cerr << "chans: " << arg.channels() << std::endl;
+	int type = arg.depth();
+	std::string depth;
+	switch (type) {
+	case CV_8U:
+		depth = "CV_8U";
+		break;
+	case CV_8S:
+		depth = "CV_8S";
+		break;
+	case CV_16U:
+		depth = "CV_16U";
+		break;
+	case CV_16S:
+		depth = "CV_16S";
+		break;
+	case CV_32S:
+		depth = "CV_32S";
+		break;
+	case CV_32F:
+		depth = "CV_32F";
+		break;
+	case CV_64F:
+		depth = "CV_64F";
+		break;
+	}
+	std::cerr << "depth: " << depth << std::endl;
+
+	for (int i = 0; i < arg.rows; ++i) {
+		for (int j = 0; j < arg.cols; ++j) {
+			switch (type) {
+			case CV_8U:
+				std::cerr << (int) arg.at<unsigned char>(i, j);
+				break;
+			case CV_8S:
+				std::cerr << arg.at<char>(i, j);
+				break;
+			case CV_16U:
+				std::cerr << arg.at<unsigned int>(i, j);
+				break;
+			case CV_16S:
+				std::cerr << arg.at<int>(i, j);
+				break;
+			case CV_32S:
+				std::cerr << arg.at<long int>(i, j);
+				break;
+			case CV_32F:
+				std::cerr << arg.at<float>(i, j);
+				break;
+			case CV_64F:
+				std::cerr << arg.at<double>(i, j);
+				break;
+			}
+			std::cerr << " ";
+		}
+		std::cerr << std::endl;
+	}
+}
+
 void drawDeadZoneHorizon(cv::Mat image, const int &horizon,
 		const int& deadZone) {
 	cv::line(image, cv::Point2f(0, horizon + deadZone),
@@ -155,15 +216,27 @@ cv::Mat getHomography(cv::VideoCapture &capture,
 	cv::imshow("main", undistorted);
 	cv::waitKey(0);
 
+	cv::Size imageBoardSize((boardSize.width - 1) * squareSize,
+			(boardSize.height - 1) * squareSize);
+
 	std::vector<cv::Point2f> objPts(4), imgPts(4);
-	objPts[0].x = 0;
-	objPts[0].y = 0;
-	objPts[1].x = (boardSize.width - 1) * squareSize;
-	objPts[1].y = 0;
-	objPts[2].x = 0;
-	objPts[2].y = (boardSize.height - 1) * squareSize;
-	objPts[3].x = (boardSize.width - 1) * squareSize;
-	objPts[3].y = (boardSize.height - 1) * squareSize;
+//	objPts[0].x = 0;
+//	objPts[0].y = 0;
+//	objPts[1].x = (boardSize.width - 1) * squareSize;
+//	objPts[1].y = 0;
+//	objPts[2].x = 0;
+//	objPts[2].y = (boardSize.height - 1) * squareSize;
+//	objPts[3].x = (boardSize.width - 1) * squareSize;
+//	objPts[3].y = (boardSize.height - 1) * squareSize;
+	objPts[0].x = imageSize.width / 2 - imageBoardSize.width / 2;
+	objPts[0].y = imageSize.height - horizon - deadZone - imageBoardSize.height;
+	objPts[1].x = imageSize.width / 2 + imageBoardSize.width / 2;
+	objPts[1].y = imageSize.height - horizon - deadZone - imageBoardSize.height;
+	objPts[2].x = imageSize.width / 2 - imageBoardSize.width / 2;
+	objPts[2].y = imageSize.height - horizon - deadZone;
+	objPts[3].x = imageSize.width / 2 + imageBoardSize.width / 2;
+	objPts[3].y = imageSize.height - horizon - deadZone;
+
 	imgPts[0] = corners[0];
 	imgPts[1] = corners[boardSize.width - 1];
 	imgPts[2] = corners[(boardSize.height - 1) * boardSize.width];
@@ -179,7 +252,7 @@ bool horizontalPoint3Compare(cv::Point3f p1, cv::Point3f p2) {
 	return p1.x < p2.x;
 }
 
-bool verticalPoint3Compare(cv::Point3f p1, cv::Point2f p2) {
+bool verticalPoint3Compare(cv::Point3f p1, cv::Point3f p2) {
 	return p1.y < p2.y;
 }
 
@@ -187,27 +260,40 @@ cv::Mat drawTraveledRoute(const std::list<cv::Point3f> &route) {
 	cv::Mat result;
 	cv::Point3f extremes[4];
 
-	extremes[0] = std::min_element(route.begin(), route.end(),
+	extremes[0] = *std::min_element(route.begin(), route.end(),
 			horizontalPoint3Compare);
-	extremes[1] = std::max_element(route.begin(), route.end(),
+	extremes[1] = *std::max_element(route.begin(), route.end(),
 			horizontalPoint3Compare);
-	extremes[2] = std::min_element(route.begin(), route.end(),
-			verticalPoint3Compare);
-	extremes[3] = std::max_element(route.begin(), route.end(),
-			verticalPoint3Compare);
 
-	cv::Size mapSize(extremes[1].x - extremes[1].x,
+	extremes[2] = *std::min_element(route.begin(), route.end(),
+			verticalPoint3Compare);
+	extremes[3] = *std::max_element(route.begin(), route.end(),
+			verticalPoint3Compare);
+	std::cerr << extremes[0] << std::endl << extremes[1] << std::endl
+			<< extremes[2] << std::endl << extremes[3] << std::endl;
+	cv::Size mapSize(extremes[1].x - extremes[0].x,
 			extremes[3].y - extremes[2].y);
+
+	std::cerr << mapSize.width << " " << mapSize.height << std::endl;
 
 	std::list<cv::Point3f>::const_iterator bg = route.begin();
 	std::list<cv::Point3f>::const_iterator end = route.begin();
 
-	result = cv::Mat(mapSize, CV_8UC3);
+	result = cv::Mat(mapSize, CV_8UC3, cv::Scalar::all(255));
 
-	for (++end; route.end() != end; ++end) {
-		cv::line(result, cv::Point2f(bg->x, bg->y), cv::Point2f(end->x, end->y),
-				CV_RGB(255,128,0), 1, CV_AA);
+	for (++end; route.end() != end; ++end, ++bg) {
+		cv::line(result,
+				cv::Point2f(bg->x - extremes[0].x, bg->y - extremes[2].y),
+				cv::Point2f(end->x - extremes[0].x, end->y - extremes[2].y),
+				CV_RGB(0,0,255), 1, 8);
+
+		std::cerr << cv::Point2f(bg->x - extremes[0].x, bg->y - extremes[2].y)
+				<< std::endl
+				<< cv::Point2f(end->x + -extremes[0].x, end->y - extremes[2].y)
+				<< std::endl;
 	}
+
+//cv::line(result,cv::Point2f(0,0),cv::Point(1,4),cv::Scalar::all(255),1,8);
 
 	return result;
 }
@@ -232,8 +318,8 @@ int main() {
 
 	cv::Mat homography;
 
+	//cv::Size boardSize(10, 7);
 	cv::Size boardSize(9, 6);
-
 	cv::VideoCapture capture(0);
 
 	ShiThomasFeatureExtractor extractor(qualityLevel, minDistance, blockSize,
