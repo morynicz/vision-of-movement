@@ -58,6 +58,26 @@ VisualOdometer::VisualOdometer(const RotationReader &rotationReader,
 
 cv::Point3f VisualOdometer::calculateDisplacement(const cv::Mat &newFrame) {
 	cv::Point3f result(0, 0, 0);
+	_rng.next();
+	float min =-5;
+	float max = 5;
+
+	float dmin = 0;
+	float dmax = 20;
+
+	float alphaMin = -CV_PI/3;
+	float alhaMax = CV_PI/3;
+
+	float alpha = _rng.uniform(alphaMin,alhaMax);
+	float d = _rng.uniform(dmin,dmax);
+
+//	result.x = _rng.uniform(min, max);
+//	result.y = _rng.uniform(min, max);
+//	result.z = _rng.uniform(min, max);
+
+	result.x = d*sin(alpha);
+	result.y = d*cos(alpha);
+	result.z = alpha;
 
 	return result;
 }

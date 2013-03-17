@@ -38,6 +38,7 @@ class VisualOdometer {
 	int _featuresNumber;
 	int _horizonHeight;
 	int _deadZoneWidth;
+	cv::RNG _rng;
 public:
 	VisualOdometer();
 	VisualOdometer(const RotationReader &rotationReader,

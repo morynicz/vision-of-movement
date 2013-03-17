@@ -344,6 +344,7 @@ int main() {
 	float squareSize = 24;
 	std::list<cv::Point3f> positions;
 	cv::Point3f currentPosition(0, 0, 0);
+	positions.push_back(currentPosition);
 	try {
 		getCameraParameters("../logitech.yaml", rectifyMaps, imageSize);
 		horizon = imageSize.height / 2;
@@ -360,7 +361,22 @@ int main() {
 
 		char control = ' ';
 		cv::Mat input;
-		cv::namedWindow("main",CV_WINDOW_KEEPRATIO);
+		cv::namedWindow("main", CV_WINDOW_KEEPRATIO);
+		cv::namedWindow("map", CV_WINDOW_KEEPRATIO);
+//		{
+//			positions.push_front(cv::Point3f(1, 0, 0));
+//			positions.push_front(cv::Point3f(1, 1, 0));
+//			positions.push_front(cv::Point3f(0, 1, 0));
+//			positions.push_front(cv::Point3f(-1, 0, 0));
+//			positions.push_front(cv::Point3f(0, -4, 0));
+//
+//			cv::Mat map = drawTraveledRoute(positions);
+//			cv::imshow("map", map);
+//			printMatrix(map);
+//			cv::waitKey(0);
+//			return 0;
+//		}
+
 		do {
 			cv::Point3f displacement;
 			capture >> input;
@@ -369,8 +385,11 @@ int main() {
 			positions.push_front(currentPosition);
 
 			cv::Mat map = drawTraveledRoute(positions);
-			cv::imshow("main",map);
-
+			//printMatrix(map);
+			std::cerr << currentPosition.x << " " << currentPosition.y
+					<< std::endl;
+			cv::imshow("map", map);
+			control = cv::waitKey(1);
 		} while ('q' != control);
 
 	} catch (cv::Exception &ex) {
