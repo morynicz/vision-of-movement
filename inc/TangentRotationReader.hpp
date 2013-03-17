@@ -12,8 +12,9 @@
 
 class TangentRotationReader: public RotationReader {
 public:
-	TangentRotationReader(const FeatureExtractor&extractor,
-			const FeatureTracker &tracker);
+	TangentRotationReader(const FeatureExtractor &extractor,
+			const FeatureTracker &tracker,
+			const std::list<FeatureFilter*> &filters);
 	TangentRotationReader(const TangentRotationReader &toCopy);
 	virtual RotationReader *constructCopy() const;
 	virtual float readRotation(const cv::Mat &newFrame);
