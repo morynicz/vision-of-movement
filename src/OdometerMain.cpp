@@ -331,7 +331,7 @@ int main() {
 	std::list<FeatureFilter*> filters;
 
 	BirdsEyeTranslationReader transReader(homography, extractor, tracker,
-			maxFeatures, filters);
+			maxFeatures, filters,cv::Point2f(0,0));
 	TangentRotationReader rotationReader(extractor, tracker, filters);
 
 	int horizon;
