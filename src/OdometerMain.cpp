@@ -327,10 +327,13 @@ int main() {
 	LucasCandaePyramidTracker tracker(winSizeLuc, maxLevel, flagsLuc,
 			termCritLuc, minEigThr, maxErrVal);
 
-	BirdsEyeTranslationReader transReader(homography, extractor, tracker);
-	TangentRotationReader rotationReader(extractor, tracker);
-
+	unsigned int maxFeatures = 500;
 	std::list<FeatureFilter*> filters;
+
+	BirdsEyeTranslationReader transReader(homography, extractor, tracker,
+			maxFeatures, filters);
+	TangentRotationReader rotationReader(extractor, tracker, filters);
+
 	int horizon;
 	int deadZone;
 	int featuresNumber;

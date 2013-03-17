@@ -11,13 +11,16 @@
 #include "LucasCandaePyramidTracker.hpp"
 #include "BirdsEyeTranslationReader.hpp"
 
+const unsigned int DEFAULT_MAX_FEATURES = 500;
+
 VisualOdometer::VisualOdometer() {
 	_filters.clear();
+	//TODO Add default smoothness filter instead of empty list.
 	_translationReader = new BirdsEyeTranslationReader(
 			cv::Mat::eye(3, 3, CV_32F), ShiThomasFeatureExtractor(),
-			LucasCandaePyramidTracker());
+			LucasCandaePyramidTracker(),DEFAULT_MAX_FEATURES,std::list<FeatureFilter*>());
 	_rotationReader = new TangentRotationReader(ShiThomasFeatureExtractor(),
-			LucasCandaePyramidTracker());
+			LucasCandaePyramidTracker(),std::list<FeatureFilter*>());
 
 	_deadZoneWidth = 0;
 	_horizonHeight = 0.5;
@@ -45,8 +48,8 @@ VisualOdometer::VisualOdometer(const RotationReader &rotationReader,
 		const TranslationReader &translationReader,
 		const std::list<FeatureFilter*> filters, const int &horizonHeight,
 		const int &deadZoneWidth, const int &featuresNumber) :
-		_featuresNumber(featuresNumber), _horizonHeight(horizonHeight),
-		_deadZoneWidth(deadZoneWidth) {
+		_featuresNumber(featuresNumber), _horizonHeight(horizonHeight), _deadZoneWidth(
+				deadZoneWidth) {
 	_translationReader = translationReader.constructCopy();
 	_rotationReader = rotationReader.constructCopy();
 
