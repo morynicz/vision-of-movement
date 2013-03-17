@@ -14,6 +14,7 @@
 
 #include "FeatureExtractor.hpp"
 #include "FeatureTracker.hpp"
+#include "FeatureFilter.hpp"
 
 class RotationReader {
 protected:
@@ -21,6 +22,7 @@ protected:
 	FeatureTracker *_tracker;
 	FeatureExtractor *_extractor;
 	cv::Mat _oldFrame;
+	std::list<FeatureFilter*> _filters;
 public:
 	RotationReader();
 	virtual RotationReader *constructCopy() const=0;

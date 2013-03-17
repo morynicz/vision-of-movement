@@ -14,17 +14,19 @@
 
 #include "FeatureExtractor.hpp"
 #include "FeatureTracker.hpp"
+#include "FeatureFilter.hpp"
 
-class TranslationReader {
-protected:
+class TranslationReader{
+	protected:
 	std::vector<std::list<cv::Point2f> > _trackedFeatures;
 	FeatureTracker *_tracker;
 	FeatureExtractor *_extractor;
 	cv::Mat _oldFrame;
+	std::list<FeatureFilter*> _filters;
 public:
 	TranslationReader();
 	virtual TranslationReader *constructCopy() const =0;
-	virtual cv::Point2f readTranslation(const cv::Mat &newFrame) =0;
+	virtual cv::Point2f readTranslation(const cv::Mat &newFrame,const double& rotation) =0;
 	virtual ~TranslationReader();
 };
 
