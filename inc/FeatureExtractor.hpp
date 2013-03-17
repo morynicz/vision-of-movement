@@ -9,6 +9,7 @@
 #define FEATUREEXTRACTOR_HPP_
 
 #include <vector>
+#include <list>
 #include <opencv2/core/core.hpp>
 
 class FeatureExtractor {
@@ -17,6 +18,9 @@ public:
 	virtual FeatureExtractor *constructCopy() const =0;
 	virtual std::vector<cv::Point2f> extractFeatures(const cv::Mat &input,
 			const int & maxCorners) const=0;
+	void refillFeatures(const cv::Mat& oldFrame,
+			std::vector<std::list<cv::Point2f> >& features,
+			const unsigned int& maxFeatures);
 	virtual ~FeatureExtractor();
 };
 
