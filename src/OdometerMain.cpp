@@ -159,7 +159,7 @@ void getCameraParameters(const std::string &fileName,
 	fs["image_height"] >> imageSize.height;
 
 	cameraMatrix = cv::getOptimalNewCameraMatrix(intrinistics,
-			distortionCoefficients, cv::Size(640, 480), 1);
+			distortionCoefficients, imageSize, 1);
 	cv::initUndistortRectifyMap(intrinistics, distortionCoefficients,
 			cv::Mat::eye(3, 3, CV_32F), cameraMatrix, cv::Size(640, 480),
 			CV_32FC1, undistortionMaps[0], undistortionMaps[1]);
