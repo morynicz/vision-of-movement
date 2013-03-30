@@ -12,6 +12,8 @@
 #include <list>
 #include <opencv2/core/core.hpp>
 
+const int NO_FEATURES_FOUND = -10;
+
 class FeatureExtractor {
 public:
 	FeatureExtractor();

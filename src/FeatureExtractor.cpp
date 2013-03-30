@@ -7,7 +7,6 @@
 
 #include "FeatureExtractor.hpp"
 
-
 bool comparePoints(cv::Point2f p1, cv::Point2f p2) {
 	if (p1.x != p2.x) {
 		return p1.x < p2.x;
@@ -35,7 +34,6 @@ bool listPointsEqual(std::list<cv::Point2f> l1, std::list<cv::Point2f> l2) {
 	return l1.front() == l2.front();
 }
 
-
 FeatureExtractor::FeatureExtractor() {
 	// TODO Auto-generated constructor stub
 
@@ -60,16 +58,20 @@ void FeatureExtractor::refillFeatures(const cv::Mat& oldFrame,
 		std::vector<std::list<cv::Point2f> > additionalFeatureList;
 		std::vector<cv::Point2f> additionalFeatures = extractFeatures(oldFrame,
 				maxFeatures - oldFeatures.size());
+		if (additionalFeatures.empty()) {
+			cv::Exception ex(NO_FEATURES_FOUND, "no features found", __func__,
+					__FILE__, __LINE__);
+			throw ex;
+		}
 		additionalFeatureList.resize(additionalFeatures.size());
 		for (unsigned int i = 0; i < additionalFeatures.size(); ++i) {
 			additionalFeatureList[i].push_front(additionalFeatures[i]);
 		}
-		features.insert(features.end(),
-				additionalFeatureList.begin(), additionalFeatureList.end());
-		std::sort(features.begin(), features.end(),
-				compareListPoints);
+		features.insert(features.end(), additionalFeatureList.begin(),
+				additionalFeatureList.end());
+		std::sort(features.begin(), features.end(), compareListPoints);
 		features.erase(
-				std::unique(features.begin(), features.end(),
-						listPointsEqual));
+				std::unique(features.begin(), features.end(), listPointsEqual));
+
 	}
 }
