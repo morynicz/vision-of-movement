@@ -139,11 +139,10 @@ void calibrateParameters(cv::VideoCapture &capture,
 const int READ_CAMERA_PARAMETERS_FAILED = -1;
 
 void getCameraParameters(const std::string &fileName,
-		std::vector<cv::Mat> &undistortionMaps, cv::Size &imageSize) {
+		std::vector<cv::Mat> &undistortionMaps, cv::Mat& cameraMatrix,
+		cv::Mat& distortionCoefficients, cv::Size &imageSize) {
 	cv::FileStorage fs(fileName, cv::FileStorage::READ);
 	cv::Mat intrinistics;
-	cv::Mat cameraMatrix;
-	cv::Mat distortionCoeffs;
 
 	if (!fs.isOpened()) {
 		cv::Exception ex(READ_CAMERA_PARAMETERS_FAILED,
@@ -155,13 +154,13 @@ void getCameraParameters(const std::string &fileName,
 	undistortionMaps.resize(2);
 
 	fs["camera_matrix"] >> intrinistics;
-	fs["distortion_coefficients"] >> distortionCoeffs;
+	fs["distortion_coefficients"] >> distortionCoefficients;
 	fs["image_width"] >> imageSize.width;
 	fs["image_height"] >> imageSize.height;
 
-	cameraMatrix = cv::getOptimalNewCameraMatrix(intrinistics, distortionCoeffs,
-			cv::Size(640, 480), 1);
-	cv::initUndistortRectifyMap(intrinistics, distortionCoeffs,
+	cameraMatrix = cv::getOptimalNewCameraMatrix(intrinistics,
+			distortionCoefficients, cv::Size(640, 480), 1);
+	cv::initUndistortRectifyMap(intrinistics, distortionCoefficients,
 			cv::Mat::eye(3, 3, CV_32F), cameraMatrix, cv::Size(640, 480),
 			CV_32FC1, undistortionMaps[0], undistortionMaps[1]);
 
@@ -410,7 +409,9 @@ int main() {
 	cv::Point3f currentPosition(0, 0, 0);
 	positions.push_back(currentPosition);
 	try {
-		getCameraParameters("../logitech.yaml", rectifyMaps, imageSize);
+		cv::Mat cameraMatrix, distortionCoefficients;
+		getCameraParameters("../logitech.yaml", rectifyMaps, cameraMatrix,
+				distortionCoefficients, imageSize);
 		horizon = imageSize.height / 2;
 		deadZone = 0;
 		std::cerr << "raz";
