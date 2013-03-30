@@ -27,7 +27,7 @@ public:
 			const std::list<FeatureFilter*>& filters,
 			cv::Point2f rotationCentre);
 	virtual TranslationReader *constructCopy() const;
-	virtual cv::Point2f readTranslation(const cv::Mat &newFrame,
+	virtual cv::Point3f readTranslation(const cv::Mat &newFrame,
 			const double& rotation);
 	cv::Mat getBirdsEyeView(const cv::Mat &input);
 	virtual ~BirdsEyeTranslationReader();

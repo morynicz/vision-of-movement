@@ -66,10 +66,10 @@ TranslationReader *BirdsEyeTranslationReader::constructCopy() const {
 	return new BirdsEyeTranslationReader(*this);
 }
 
-cv::Point2f BirdsEyeTranslationReader::readTranslation(const cv::Mat &newFrame,
+cv::Point3f BirdsEyeTranslationReader::readTranslation(const cv::Mat &newFrame,
 		const double& rotationAngle) {
 	cv::Mat newTransformed;
-	cv::Point2f result(0, 0);
+	cv::Point3f result(0, 0, rotationAngle);
 	cv::Mat rotationMatrix = cv::getRotationMatrix2D(_rotationCenter,
 			-rotationAngle, 1);
 	int vectorHalf = 0;

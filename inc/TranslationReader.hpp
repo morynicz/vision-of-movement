@@ -26,7 +26,7 @@ class TranslationReader{
 public:
 	TranslationReader();
 	virtual TranslationReader *constructCopy() const =0;
-	virtual cv::Point2f readTranslation(const cv::Mat &newFrame,
+	virtual cv::Point3f readTranslation(const cv::Mat &newFrame,
 			const double& rotation) =0;
 	virtual ~TranslationReader();
 };
