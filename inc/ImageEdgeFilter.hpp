@@ -12,13 +12,13 @@
 #include "FeatureFilter.hpp"
 
 class ImageEdgeFilter: public FeatureFilter {
-	cv::Mat _homographyMatrix;
+	std::vector<cv::Point2f> corners;
+	double _margin;
 public:
-	ImageEdgeFilter();
-	void setHomographyMatrix(const cv::Mat &homographyMatrix) {
-		_homographyMatrix = homographyMatrix;
-	}
-	;
+	ImageEdgeFilter(const cv::Mat& transformMatrix, const cv::Size &imageSzie,
+			const double &margin);
+	std::vector<std::list<cv::Point2f> > filterFeatures(
+				const std::vector<std::list<cv::Point2f> > &features);
 	virtual ~ImageEdgeFilter();
 };
 
