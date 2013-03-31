@@ -214,48 +214,6 @@ std::vector<cv::Point2f> getChessboardCorners(cv::VideoCapture &capture,
 	return corners;
 }
 
-cv::Mat getHomography(std::vector<cv::Point2f> corners,
-		const cv::Size& imageSize, const cv::Size& boardSize,
-		const double& squareSize, const int &horizon, const int &deadZone) {
-	cv::Mat result;
-
-	cv::Mat newIn;
-	cv::Mat undistorted;
-	cv::Mat greyNewIn;
-	cv::Mat ground;
-
-	cv::Size imageBoardSize((boardSize.width - 1) * squareSize,
-			(boardSize.height - 1) * squareSize);
-
-	std::vector<cv::Point2f> objPts(4), imgPts(4);
-//	objPts[0].x = 0;
-//	objPts[0].y = 0;
-//	objPts[1].x = (boardSize.width - 1) * squareSize;
-//	objPts[1].y = 0;
-//	objPts[2].x = 0;
-//	objPts[2].y = (boardSize.height - 1) * squareSize;
-//	objPts[3].x = (boardSize.width - 1) * squareSize;
-//	objPts[3].y = (boardSize.height - 1) * squareSize;
-	objPts[0].x = imageSize.width / 2 - imageBoardSize.width / 2;
-	objPts[0].y = imageSize.height - horizon - deadZone - imageBoardSize.height;
-	objPts[1].x = imageSize.width / 2 + imageBoardSize.width / 2;
-	objPts[1].y = imageSize.height - horizon - deadZone - imageBoardSize.height;
-	objPts[2].x = imageSize.width / 2 - imageBoardSize.width / 2;
-	objPts[2].y = imageSize.height - horizon - deadZone;
-	objPts[3].x = imageSize.width / 2 + imageBoardSize.width / 2;
-	objPts[3].y = imageSize.height - horizon - deadZone;
-
-	imgPts[0] = corners[0];
-	imgPts[1] = corners[boardSize.width - 1];
-	imgPts[2] = corners[(boardSize.height - 1) * boardSize.width];
-	imgPts[3] = corners[(boardSize.height) * boardSize.width - 1];
-
-	result = cv::getPerspectiveTransform(objPts, imgPts);
-//	perspTrans.at<double>(Point(2, 2)) = height;
-
-	return result;
-}
-
 cv::Mat rtTransformMatrix(const cv::Mat &rot, const cv::Mat &trans) {
 	cv::Mat r;
 	if (1 == rot.cols || 1 == rot.rows) {
@@ -286,11 +244,41 @@ cv::Mat invRtTransformMatrix(const cv::Mat& rtTransformMatrix) {
 	return invRtTransformMatrix(r, t);
 }
 
-cv::Point2f getRotationCenter(const std::vector<cv::Point2f> &imageCorners,
-		const cv::Mat &cameraMatrix, const cv::Mat &distortionCoeffs,
-		const cv::Size &boardSize, const double &squareSize) {
-	cv::Mat rvec, tvec,rot;
-cv::Point2f result;
+void getHomographyAndRtMatrix(std::vector<cv::Point2f> corners,
+		const cv::Size& imageSize, const cv::Size& boardSize,
+		const double& squareSize, const int &horizon, const int &deadZone,
+		const cv::Mat& cameraMatrix, const cv::Mat& distortionCoefficients,
+		cv::Mat& homography, cv::Point2f rotationCenter, cv::Mat &rtMatrix) {
+	cv::Mat result;
+
+	cv::Mat newIn;
+	cv::Mat undistorted;
+	cv::Mat greyNewIn;
+	cv::Mat ground;
+
+	cv::Size imageBoardSize((boardSize.width - 1) * squareSize,
+			(boardSize.height - 1) * squareSize);
+
+	std::vector<cv::Point2f> objPts(4), imgPts(4);
+
+	objPts[0].x = imageSize.width / 2 - imageBoardSize.width / 2;
+	objPts[0].y = imageSize.height - horizon - deadZone - imageBoardSize.height;
+	objPts[1].x = imageSize.width / 2 + imageBoardSize.width / 2;
+	objPts[1].y = imageSize.height - horizon - deadZone - imageBoardSize.height;
+	objPts[2].x = imageSize.width / 2 - imageBoardSize.width / 2;
+	objPts[2].y = imageSize.height - horizon - deadZone;
+	objPts[3].x = imageSize.width / 2 + imageBoardSize.width / 2;
+	objPts[3].y = imageSize.height - horizon - deadZone;
+
+	imgPts[0] = corners[0];
+	imgPts[1] = corners[boardSize.width - 1];
+	imgPts[2] = corners[(boardSize.height - 1) * boardSize.width];
+	imgPts[3] = corners[(boardSize.height) * boardSize.width - 1];
+
+	homography = cv::getPerspectiveTransform(objPts, imgPts);
+
+	cv::Mat rvec, tvec;
+
 	std::vector<cv::Point3f> mCorners;
 	for (int i = 0; i < boardSize.height; ++i) {
 		for (int j = 0; j < boardSize.width; ++j) {
@@ -299,13 +287,15 @@ cv::Point2f result;
 		}
 	}
 
-	cv::solvePnP(mCorners, imageCorners, cameraMatrix, distortionCoeffs, rvec,
+	cv::solvePnP(mCorners, corners, cameraMatrix, distortionCoefficients, rvec,
 			tvec, false, CV_ITERATIVE);
+	cv::Mat rot;
 	cv::Rodrigues(rvec, rot);
-	cv::Mat invRt=invRtTransformMatrix(rot, tvec);
-	cv::Point2f objOrigin();
-			//result = objPts[0]+cv::Point2f(invRt.at<float>(3,0),invRt.at<float>(3,1));
-	return result;
+
+	rtMatrix = invRtTransformMatrix(rot, tvec);
+	rotationCenter = objPts[0]
+			+ cv::Point2f(rtMatrix.at<float>(3, 0), rtMatrix.at<float>(3, 1));
+
 }
 
 bool horizontalPoint3Compare(cv::Point3f p1, cv::Point3f p2) {
@@ -406,6 +396,8 @@ int main() {
 	cv::TermCriteria termCritHom(CV_TERMCRIT_EPS + CV_TERMCRIT_ITER, 40, 0.001);
 	float squareSize = 24;
 	std::list<cv::Point3f> positions;
+	cv::Point2f rotationCenter;
+	cv::Mat rtMatrix;
 	cv::Point3f currentPosition(0, 0, 0);
 	positions.push_back(currentPosition);
 	try {
@@ -416,11 +408,16 @@ int main() {
 		deadZone = 0;
 		std::cerr << "raz";
 		calibrateParameters(capture, rectifyMaps, horizon, deadZone, imageSize);
-		std::cerr << "dwa";
-		homography = getHomography(capture, rectifyMaps, horizon, deadZone,
-				boardSize, imageSize, winSizeHom, zeroZoneHom, termCritHom,
-				squareSize);
-		std::cerr << "trzy";
+		std::vector<cv::Point2f> corners = getChessboardCorners(capture,
+				rectifyMaps, horizon, deadZone, boardSize, imageSize,
+				winSizeHom, zeroZoneHom, termCritHom);
+		getHomographyAndRtMatrix(corners, imageSize, boardSize, squareSize,
+				horizon, deadZone, cameraMatrix, distortionCoefficients,
+				homography, rotationCenter, rtMatrix);
+
+		BirdsEyeTranslationReader transReader(homography, extractor, tracker,
+				maxFeatures, filters, rotationCenter);
+
 		VisualOdometer odo(rotationReader, transReader, filters, horizon,
 				deadZone, featuresNumber);
 
