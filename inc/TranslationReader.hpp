@@ -16,8 +16,8 @@
 #include "FeatureTracker.hpp"
 #include "FeatureFilter.hpp"
 
-class TranslationReader{
-	protected:
+class TranslationReader {
+protected:
 	std::vector<std::list<cv::Point2f> > _trackedFeatures;
 	FeatureTracker *_tracker;
 	FeatureExtractor *_extractor;
