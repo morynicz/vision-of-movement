@@ -39,14 +39,14 @@ LucasCandaePyramidTracker::LucasCandaePyramidTracker(
 LucasCandaePyramidTracker::LucasCandaePyramidTracker(const cv::Size &windowSize,
 		const unsigned int &maxLevel, const int &flags,
 		const cv::TermCriteria &terminationCriteria,
-		const double &minEigenvalueThreshold, const double &maxErrorValue):
-			_windowSize(windowSize), _maxLevel(maxLevel), _flags(flags),
-			_minEigenvalueThreshold(minEigenvalueThreshold),
-			_maxErrorThreshold(maxErrorValue), _termCrit(terminationCriteria){
+		const double &minEigenvalueThreshold, const double &maxErrorValue) :
+		_windowSize(windowSize), _maxLevel(maxLevel), _flags(flags), _minEigenvalueThreshold(
+				minEigenvalueThreshold), _maxErrorThreshold(maxErrorValue), _termCrit(
+				terminationCriteria) {
 
 }
 
-FeatureTracker *LucasCandaePyramidTracker::constructCopy()const{
+FeatureTracker *LucasCandaePyramidTracker::constructCopy() const {
 	return new LucasCandaePyramidTracker(*this);
 }
 
@@ -60,8 +60,8 @@ void LucasCandaePyramidTracker::trackFeatures(const cv::Mat &oldInput,
 	for (unsigned int i = 0; i < trackedFeatures.size(); ++i) {
 		oldFeatures[i] = trackedFeatures[i].front();
 	}
-	cv::calcOpticalFlowPyrLK(oldInput, newInput, oldFeatures, newFeatures, status,
-			err, _windowSize, _maxLevel, _termCrit, _flags,
+	cv::calcOpticalFlowPyrLK(oldInput, newInput, oldFeatures, newFeatures,
+			status, err, _windowSize, _maxLevel, _termCrit, _flags,
 			_minEigenvalueThreshold);
 
 	for (unsigned i = 0; i < newFeatures.size(); ++i) {
