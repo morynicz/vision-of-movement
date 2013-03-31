@@ -423,6 +423,8 @@ int main() {
 
 		char control = ' ';
 		cv::Mat input;
+		cv::Mat undistorted;
+		cv::Mat grey;
 		cv::namedWindow("main", CV_WINDOW_KEEPRATIO);
 		cv::namedWindow("map", CV_WINDOW_KEEPRATIO);
 //		{
@@ -442,7 +444,11 @@ int main() {
 		do {
 			cv::Point3f displacement;
 			capture >> input;
-			displacement = odo.calculateDisplacement(input);
+
+			cv::remap(input, undistorted, rectifyMaps[0], rectifyMaps[1],
+					cv::INTER_LINEAR);
+			cv::cvtColor(undistorted, grey, CV_RGB2GRAY);
+			displacement = odo.calculateDisplacement(grey);
 			currentPosition = currentPosition + displacement;
 			positions.push_front(currentPosition);
 
