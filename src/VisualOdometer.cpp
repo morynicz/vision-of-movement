@@ -18,9 +18,10 @@ VisualOdometer::VisualOdometer() {
 	//TODO Add default smoothness filter instead of empty list.
 	_translationReader = new BirdsEyeTranslationReader(
 			cv::Mat::eye(3, 3, CV_32F), ShiThomasFeatureExtractor(),
-			LucasCandaePyramidTracker(),DEFAULT_MAX_FEATURES,std::list<FeatureFilter*>());
+			LucasCandaePyramidTracker(), DEFAULT_MAX_FEATURES,
+			std::list<FeatureFilter*>(), cv::Point2f(0, 0));
 	_rotationReader = new TangentRotationReader(ShiThomasFeatureExtractor(),
-			LucasCandaePyramidTracker(),std::list<FeatureFilter*>());
+			LucasCandaePyramidTracker(), std::list<FeatureFilter*>());
 
 	_deadZoneWidth = 0;
 	_horizonHeight = 0.5;
