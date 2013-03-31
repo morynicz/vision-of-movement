@@ -324,6 +324,13 @@ cv::Mat drawTraveledRoute(const std::list<cv::Point3f> &route) {
 	cv::Size mapSize(extremes[1].x - extremes[0].x,
 			extremes[3].y - extremes[2].y);
 
+	if (0 == mapSize.width) {
+		mapSize.width = 1;
+	}
+	if (0 == mapSize.height) {
+		mapSize.height = 1;
+	}
+
 	std::cerr << mapSize.width << " " << mapSize.height << std::endl;
 
 	std::list<cv::Point3f>::const_iterator bg = route.begin();
