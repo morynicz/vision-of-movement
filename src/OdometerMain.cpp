@@ -319,8 +319,7 @@ cv::Mat drawTraveledRoute(const std::list<cv::Point3f> &route) {
 			verticalPoint3Compare);
 	extremes[3] = *std::max_element(route.begin(), route.end(),
 			verticalPoint3Compare);
-	std::cerr << extremes[0] << std::endl << extremes[1] << std::endl
-			<< extremes[2] << std::endl << extremes[3] << std::endl;
+
 	cv::Size mapSize(extremes[1].x - extremes[0].x,
 			extremes[3].y - extremes[2].y);
 
@@ -344,13 +343,7 @@ cv::Mat drawTraveledRoute(const std::list<cv::Point3f> &route) {
 				cv::Point2f(end->x - extremes[0].x, end->y - extremes[2].y),
 				CV_RGB(0,0,255), 1, 8);
 
-		std::cerr << cv::Point2f(bg->x - extremes[0].x, bg->y - extremes[2].y)
-				<< std::endl
-				<< cv::Point2f(end->x + -extremes[0].x, end->y - extremes[2].y)
-				<< std::endl;
 	}
-
-//cv::line(result,cv::Point2f(0,0),cv::Point(1,4),cv::Scalar::all(255),1,8);
 
 	return result;
 }
@@ -387,8 +380,6 @@ int main() {
 	unsigned int maxFeatures = 500;
 	std::list<FeatureFilter*> filters;
 
-	BirdsEyeTranslationReader transReader(homography, extractor, tracker,
-			maxFeatures, filters,cv::Point2f(0,0));
 	TangentRotationReader rotationReader(extractor, tracker, filters);
 
 	int horizon;
@@ -413,7 +404,6 @@ int main() {
 				distortionCoefficients, imageSize);
 		horizon = imageSize.height / 2;
 		deadZone = 0;
-		std::cerr << "raz";
 		calibrateParameters(capture, rectifyMaps, horizon, deadZone, imageSize);
 		std::vector<cv::Point2f> corners = getChessboardCorners(capture,
 				rectifyMaps, horizon, deadZone, boardSize, imageSize,
@@ -434,21 +424,9 @@ int main() {
 		cv::Mat grey;
 		cv::namedWindow("main", CV_WINDOW_KEEPRATIO);
 		cv::namedWindow("map", CV_WINDOW_KEEPRATIO);
-//		{
-//			positions.push_front(cv::Point3f(1, 0, 0));
-//			positions.push_front(cv::Point3f(1, 1, 0));
-//			positions.push_front(cv::Point3f(0, 1, 0));
-//			positions.push_front(cv::Point3f(-1, 0, 0));
-//			positions.push_front(cv::Point3f(0, -4, 0));
-//
-//			cv::Mat map = drawTraveledRoute(positions);
-//			cv::imshow("map", map);
-//			printMatrix(map);
-//			cv::waitKey(0);
-//			return 0;
-//		}
 
 		do {
+			std::cerr << "p" << std::endl;
 			cv::Point3f displacement;
 			capture >> input;
 
@@ -458,13 +436,15 @@ int main() {
 			displacement = odo.calculateDisplacement(grey);
 			currentPosition = currentPosition + displacement;
 			positions.push_front(currentPosition);
-
+			std::cerr << "d\n" << displacement << std::endl;
 			cv::Mat map = drawTraveledRoute(positions);
 			//printMatrix(map);
-			std::cerr << currentPosition.x << " " << currentPosition.y
+			std::cerr << currentPosition << std::endl << map.size()
 					<< std::endl;
 			cv::imshow("map", map);
+			cv::imshow("main", input);
 			control = cv::waitKey(1);
+			std::cerr << "k" << std::endl;
 		} while ('q' != control);
 
 	} catch (cv::Exception &ex) {
