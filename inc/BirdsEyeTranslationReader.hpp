@@ -25,7 +25,7 @@ public:
 			const FeatureExtractor &extractor, const FeatureTracker &tracker,
 			const unsigned int& maxFeatures,
 			const std::list<FeatureFilter*>& filters,
-			cv::Point2f rotationCentre);
+			cv::Point2f rotationCentre,const cv::Size &imageSize,const double &margin);
 	virtual TranslationReader *constructCopy() const;
 	virtual cv::Point3f readTranslation(const cv::Mat &newFrame,
 			const double& rotation);

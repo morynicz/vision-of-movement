@@ -6,6 +6,7 @@
  */
 
 #include "BirdsEyeTranslationReader.hpp"
+#include "ImageEdgeFilter.hpp"
 #include <opencv2/imgproc/imgproc.hpp>
 
 #include <iostream>
@@ -25,7 +26,8 @@ cv::Mat drawFeatureHistory(const cv::Mat &newImage,
 BirdsEyeTranslationReader::BirdsEyeTranslationReader(const cv::Mat &homography,
 		const FeatureExtractor &extractor, const FeatureTracker &tracker,
 		const unsigned int& maxFeatures,
-		const std::list<FeatureFilter*>& filters, cv::Point2f rotationCentre) :
+		const std::list<FeatureFilter*>& filters, cv::Point2f rotationCentre,
+		const cv::Size& imageSize, const double &margin) :
 		_maxFeatures(maxFeatures), _rotationCenter(rotationCentre) {
 	_homography = homography.clone();
 	_tracker = tracker.constructCopy();
@@ -34,6 +36,8 @@ BirdsEyeTranslationReader::BirdsEyeTranslationReader(const cv::Mat &homography,
 			it != filters.end(); ++it) {
 		_filters.push_back((*it)->constructCopy());
 	}
+	_filters.push_front(new ImageEdgeFilter(homography, imageSize, margin));
+
 }
 
 BirdsEyeTranslationReader::BirdsEyeTranslationReader(

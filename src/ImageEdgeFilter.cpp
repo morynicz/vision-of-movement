@@ -6,17 +6,31 @@
  */
 
 #include "ImageEdgeFilter.hpp"
+#include <iostream>
 
 ImageEdgeFilter::ImageEdgeFilter(const cv::Mat &transformMatrix,
 		const cv::Size &imageSize, const double &margin) :
 		_margin(margin) {
-	std::vector<cv::Point2f> tempCorners;
-	tempCorners.push_back(cv::Point2f(0, 0));
-	tempCorners.push_back(cv::Point2f(imageSize.width, 0));
-	tempCorners.push_back(cv::Point2f(0, imageSize.height));
-	tempCorners.push_back(cv::Point2f(imageSize.width, imageSize.height));
-	cv::transform(tempCorners, corners, transformMatrix);
+	std::vector<cv::Point2f> tempCorners(5), corners;
+	_a.resize(4);
+	_c.resize(4);
 
+	tempCorners[0] = (cv::Point2f(0, 0));
+	tempCorners[1] = (cv::Point2f(imageSize.width, 0));
+	tempCorners[2] = (cv::Point2f(0, imageSize.height));
+	tempCorners[3] = (cv::Point2f(imageSize.width, imageSize.height));
+	tempCorners[4] = tempCorners[0];
+	cv::perspectiveTransform(tempCorners, corners, transformMatrix);
+	for (int i = 0; i < 4; ++i) {
+		cv::Point2f tmp = corners[i + 1] - corners[i];
+		_a[i] = tmp.y / tmp.x;
+		_c[i] = corners[i + 1].y - corners[i + 1].x * _a[i];
+		std::cerr << _a[i] << " " << _c[i] << std::endl;
+	}
+}
+
+ImageEdgeFilter::ImageEdgeFilter(const ImageEdgeFilter & toCopy) :
+		_a(toCopy._a), _c(toCopy._c), _margin(toCopy._margin) {
 }
 
 ImageEdgeFilter::~ImageEdgeFilter() {
@@ -26,8 +40,23 @@ ImageEdgeFilter::~ImageEdgeFilter() {
 std::vector<std::list<cv::Point2f> > ImageEdgeFilter::filterFeatures(
 		const std::vector<std::list<cv::Point2f> >& features) {
 	std::vector<std::list<cv::Point2f> > result(features);
-	for (int i = 0; i < result.size(); ++i) {
-
+	for (unsigned int i = 0; i < result.size(); ++i) {
+		for (unsigned int j = 0; j < _a.size(); ++j) {
+			double d = abs(
+					_a[j] * result[i].front().x - result[i].front().y + _c[j])
+					/ sqrt(_a[j] * _a[j] + 1);
+			if (_margin > d) {
+				result.erase(result.begin() + i);
+				--i;
+				break;
+			}
+		}
 	}
+	std::cerr<<result.size()<<"sf"<<features.size()<<std::endl;
+	return result;
+}
+
+FeatureFilter *ImageEdgeFilter::constructCopy(void)const{
+	FeatureFilter *result = new ImageEdgeFilter(*this);
 	return result;
 }

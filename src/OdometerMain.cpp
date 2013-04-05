@@ -397,6 +397,8 @@ int main() {
 	cv::Point2f rotationCenter;
 	cv::Mat rtMatrix;
 	cv::Point3f currentPosition(0, 0, 0);
+	double margin = 5;
+
 	positions.push_back(currentPosition);
 	try {
 		cv::Mat cameraMatrix, distortionCoefficients;
@@ -413,8 +415,7 @@ int main() {
 				homography, rotationCenter, rtMatrix);
 
 		BirdsEyeTranslationReader transReader(homography, extractor, tracker,
-				maxFeatures, filters, rotationCenter);
-
+				maxFeatures, filters, rotationCenter, imageSize, margin);
 		VisualOdometer odo(rotationReader, transReader, filters, horizon,
 				deadZone, featuresNumber);
 

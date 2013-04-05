@@ -16,6 +16,7 @@ add_library(featureTrackers src/FeatureTracker.cpp src/LucasCandaePyramidTracker
 
 target_link_libraries(featureExtractors opencv_core opencv_video opencv_imgproc)
 target_link_libraries(featureTrackers opencv_core opencv_video)
+target_link_libraries(translationReaders featureFilters)
 
 target_link_libraries(visualOdometer opencv_core opencv_highgui opencv_imgproc opencv_calib3d opencv_video featureFilters featureExtractors featureTrackers translationReaders rotationReaders)
 
