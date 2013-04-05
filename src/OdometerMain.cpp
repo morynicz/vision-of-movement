@@ -76,6 +76,8 @@ int main() {
 		cv::Mat cameraMatrix, distortionCoefficients;
 		getCameraParameters("../logitech.yaml", rectifyMaps, cameraMatrix,
 				distortionCoefficients, imageSize);
+		capture.set(CV_CAP_PROP_FRAME_WIDTH, imageSize.width);
+		capture.set(CV_CAP_PROP_FRAME_HEIGHT, imageSize.height);
 		horizon = imageSize.height / 2;
 		deadZone = 0;
 		calibrateParameters(capture, rectifyMaps, horizon, deadZone, imageSize);
