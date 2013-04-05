@@ -40,7 +40,6 @@ class VisualOdometer {
 	int _deadZoneWidth;
 	cv::RNG _rng;
 public:
-	VisualOdometer();
 	VisualOdometer(const RotationReader &rotationReader,
 			const TranslationReader &translationReader,
 			const std::list<FeatureFilter*> filters,
