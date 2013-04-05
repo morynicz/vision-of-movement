@@ -121,12 +121,10 @@ std::vector<cv::Point2f> BirdsEyeTranslationReader::computeTranslationVectors(
 		oldFeatures[i] = _trackedFeatures[i].front();
 		newFeatures[i] = *(++_trackedFeatures[i].begin());
 	}
-	std::cerr << _trackedFeatures.size() << std::endl << newFeatures.size()
-			<< std::endl << rotationMatrix << std::endl;
+
 	cv::transform(newFeatures, newTransformed, rotationMatrix);
 	for (unsigned int i = 0; i < result.size(); ++i) {
 		result[i] = newTransformed[i] - oldFeatures[i];
-		std::cerr << result[i] << std::endl;
 	}
 
 	return result;
