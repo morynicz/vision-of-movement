@@ -19,6 +19,8 @@
 #include <string>
 #include <vector>
 
+using std::cerr;
+using std::endl;
 
 int main() {
 
@@ -40,9 +42,9 @@ int main() {
 
 	cv::Mat homography;
 
-	//cv::Size boardSize(10, 7);
-	cv::Size boardSize(9, 6);
-	cv::VideoCapture capture(0);
+	cv::Size boardSize(10, 7);
+	//cv::Size boardSize(9, 6);
+	cv::VideoCapture capture(1);
 
 	ShiThomasFeatureExtractor extractor(qualityLevel, minDistance, blockSize,
 			winSizeShi, zeroZone, termCritShi);
@@ -74,7 +76,7 @@ int main() {
 	positions.push_back(currentPosition);
 	try {
 		cv::Mat cameraMatrix, distortionCoefficients;
-		getCameraParameters("../logitech.yaml", rectifyMaps, cameraMatrix,
+		getCameraParameters("../sphereAF.yml", rectifyMaps, cameraMatrix,
 				distortionCoefficients, imageSize);
 		capture.set(CV_CAP_PROP_FRAME_WIDTH, imageSize.width);
 		capture.set(CV_CAP_PROP_FRAME_HEIGHT, imageSize.height);
@@ -84,15 +86,17 @@ int main() {
 		std::vector<cv::Point2f> corners = getChessboardCorners(capture,
 				rectifyMaps, horizon, deadZone, boardSize, imageSize,
 				winSizeHom, zeroZoneHom, termCritHom);
+		cerr << "got corners" << endl;
 		getHomographyAndRtMatrix(corners, imageSize, boardSize, squareSize,
 				horizon, deadZone, cameraMatrix, distortionCoefficients,
 				homography, rotationCenter, rtMatrix);
-
+		cerr << "got transform and rt" << endl;
 		BirdsEyeTranslationReader transReader(homography, extractor, tracker,
 				maxFeatures, filters, rotationCenter, imageSize, margin);
+		cerr << "got birdy" << endl;
 		VisualOdometer odo(rotationReader, transReader, filters, horizon,
 				deadZone, featuresNumber);
-
+		cerr << "got VO" << endl;
 		char control = ' ';
 		cv::Mat input;
 		cv::Mat undistorted;
