@@ -22,3 +22,6 @@ target_link_libraries(visualOdometer opencv_core opencv_highgui opencv_imgproc o
 
 add_executable(cameraCalibration src/calibration.cpp)
 target_link_libraries(cameraCalibration opencv_core opencv_highgui opencv_calib3d opencv_imgproc opencv_features2d)
+
+add_executable(odometryTests src/visualOdometry.cpp)
+target_link_libraries(odometryTests opencv_core opencv_highgui opencv_imgproc opencv_calib3d opencv_video)
