@@ -8,15 +8,15 @@
 #include "ErrorCodes.hpp"
 #include "ConvenienceFunctions.hpp"
 
-
+#include <iostream>
 void drawDeadZoneHorizon(cv::Mat image, const int &horizon,
-		const int& deadZone) {
-	cv::line(image, cv::Point2f(0, horizon + deadZone),
-			cv::Point2f(image.cols, horizon + deadZone), CV_RGB(0,255,0), 2,
-			CV_AA);
-	cv::line(image, cv::Point2f(0, horizon - deadZone),
-			cv::Point2f(image.cols, horizon - deadZone), CV_RGB(0,255,0), 2,
-			CV_AA);
+        const int& deadZone) {
+    cv::line(image, cv::Point2f(0, horizon + deadZone),
+            cv::Point2f(image.cols, horizon + deadZone),
+            CV_RGB(0,255,0), 2, CV_AA);
+    cv::line(image, cv::Point2f(0, horizon - deadZone),
+            cv::Point2f(image.cols, horizon - deadZone),
+            CV_RGB(0,255,0), 2, CV_AA);
 }
 
 cv::Mat drawTraveledRoute(const std::list<cv::Point3f> &route) {

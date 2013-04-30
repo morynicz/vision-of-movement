@@ -14,9 +14,8 @@
 #include <list>
 #include <vector>
 
-
 void drawDeadZoneHorizon(cv::Mat image, const int &horizon,
-		const int& deadZone);
+        const int& deadZone);
 
 cv::Mat drawTraveledRoute(const std::list<cv::Point3f> &route);
 
