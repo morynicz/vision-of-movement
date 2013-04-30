@@ -8,9 +8,15 @@
 #include "PreparationFunctions.hpp"
 #include "ErrorCodes.hpp"
 #include "DrawingFunctions.hpp"
+#include "ConvenienceFunctions.hpp"
 
 #include "opencv2/imgproc/imgproc.hpp"
 #include "opencv2/calib3d/calib3d.hpp"
+
+#include "opencv2/highgui/highgui.hpp"
+#include <cmath>
+
+#include <iostream>
 
 void calibrateParameters(cv::VideoCapture &capture,
 		std::vector<cv::Mat> rectifyMaps, int &horizon, int &deadZone,
@@ -72,7 +78,6 @@ std::vector<cv::Point2f> getChessboardCorners(cv::VideoCapture &capture,
 			cv::Size(imageSize.width, imageSize.height - horizon - deadZone));
 	bool found = false;
 	std::vector<cv::Point2f> corners;
-	int cornerCount = 0;
 	cv::namedWindow("ground", CV_WINDOW_NORMAL);
 	char control = ' ';
 	do {
@@ -84,13 +89,14 @@ std::vector<cv::Point2f> getChessboardCorners(cv::VideoCapture &capture,
 		found = cv::findChessboardCorners(ground, boardSize, corners,
 				CV_CALIB_CB_FAST_CHECK | CV_CALIB_CB_ADAPTIVE_THRESH
 						| CV_CALIB_CB_NORMALIZE_IMAGE);
-		//shown = undistorted.clone();
-		if (cornerCount > 0) {
-			drawChessboardCorners(undistorted, boardSize, corners, found);
+		if (corners.size() > 0) {
+			drawChessboardCorners(undistorted(lowerRoi), boardSize, corners, found);
+			drawChessboardCorners(ground, boardSize, corners, found);
+			std::cerr << corners.size() << std::endl;
 		}
 		drawDeadZoneHorizon(undistorted, horizon, deadZone);
 		imshow("ground", ground);
-		//imshow("main"), shown);
+		imshow("main", undistorted);
 		control = cv::waitKey(1);
 	} while (!found && 'q' != control);
 
@@ -105,6 +111,31 @@ std::vector<cv::Point2f> getChessboardCorners(cv::VideoCapture &capture,
 	cv::imshow("main", undistorted);
 	cv::waitKey(0);
 	return corners;
+}
+template<class T>
+cv::Mat_<T> matrixFromPoint(cv::Point3_<T> pt) {
+	return (cv::Mat_<T>(3, 1) << pt.x, pt.y, pt.z);
+}
+
+const int WRONG_TYPE = -2;
+
+cv::Point3d pointFromMatrix(const cv::Mat &mat) {
+	if (CV_64F == mat.depth()) {
+		return cv::Point3d(mat.at<double>(0), mat.at<double>(1),
+				mat.at<double>(2));
+	} else {
+		cv::Exception ex(WRONG_TYPE, "wrong type, should be CV_64F", __func__,
+				__FILE__, __LINE__);
+		throw ex;
+	}
+}
+
+cv::Mat getR(const cv::Mat &rT) {
+	return rT(cv::Rect(0, 0, 3, 3));
+}
+
+cv::Mat getT(const cv::Mat &rT) {
+	return rT(cv::Range(0, 3), cv::Range(3, 4));
 }
 
 void getHomographyAndRtMatrix(std::vector<cv::Point2f> corners,
@@ -132,15 +163,15 @@ void getHomographyAndRtMatrix(std::vector<cv::Point2f> corners,
 	imgPts[2] = corners[(boardSize.height - 1) * boardSize.width];
 	imgPts[3] = corners[(boardSize.height) * boardSize.width - 1];
 
-	homography = cv::getPerspectiveTransform(objPts, imgPts);
+	//homography = cv::getPerspectiveTransform(objPts, imgPts);
 
 	cv::Mat rvec, tvec;
 
-	std::vector<cv::Point3f> mCorners;
+	std::vector<cv::Point3d> mCorners;
 	for (int i = 0; i < boardSize.height; ++i) {
 		for (int j = 0; j < boardSize.width; ++j) {
 			mCorners.push_back(
-					cv::Point3f(j * squareSize, i * squareSize, 0.9));
+					cv::Point3f(i * squareSize, j * squareSize, 0.9));
 		}
 	}
 
@@ -152,8 +183,42 @@ void getHomographyAndRtMatrix(std::vector<cv::Point2f> corners,
 	rtMatrix = invRtTransformMatrix(rot, tvec);
 	rotationCenter = objPts[0]
 			+ cv::Point2f(rtMatrix.at<float>(3, 0), rtMatrix.at<float>(3, 1));
+	printMatrix(rtMatrix);
+
+	{
+	            cv::Mat invT = getT(rtMatrix);
+
+	            cv::Mat z = rtMatrix(cv::Range(0, 3), cv::Range(2, 3));
+	            std::cerr << z << std::endl << cv::Vec3d(z);
+	            z.at<double>(2) = 0;
+	            cv::Mat zN = z / norm(cv::Vec3d(z));
+
+	            std::cerr << zN << std::endl;
+
+	            double gamma = atan2(zN.at<double>(1), zN.at<double>(0))
+	                    - atan2(0, 1);
+	            std::cerr << gamma << std::endl;
+	            gamma *= 180 / CV_PI;
+	            cv::Mat rMatN = cv::getRotationMatrix2D(objPts[0], -gamma, 1);
+
+	            cv::Mat homN;
+
+	            std::vector<cv::Point2f> rPointsN;
+	            cv::transform(objPts, rPointsN, rMatN);
+	            homN = cv::getPerspectiveTransform(rPointsN, imgPts);
+
+	            std::cerr << gamma << std::endl;
+
+	            homography = homN.clone();
+	        }
 
 }
+
+void getRAndT(const cv::Mat &rT, cv::Mat &r, cv::Mat &t) {
+	r = rT(cv::Rect(0, 0, 3, 3));
+	t = rT(cv::Range(0, 3), cv::Range(3, 4));
+}
+
 
 cv::Mat rtTransformMatrix(const cv::Mat &rot, const cv::Mat &trans) {
 	cv::Mat r;
@@ -163,8 +228,9 @@ cv::Mat rtTransformMatrix(const cv::Mat &rot, const cv::Mat &trans) {
 		r = rot;
 	}
 	cv::Mat result = cv::Mat::eye(4, 4, trans.depth());
-	cv::Mat rotation = result(cv::Rect(0, 0, 3, 3));
-	cv::Mat translation = result(cv::Range(0, 3), cv::Range(3, 4));
+	cv::Mat rotation; // = result(cv::Rect(0, 0, 3, 3));
+	cv::Mat translation; // = result(cv::Range(0, 3), cv::Range(3, 4));
+	getRAndT(result, rotation, translation);
 	r.copyTo(rotation);
 	trans.copyTo(translation);
 	return result;
