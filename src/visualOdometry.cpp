@@ -543,14 +543,6 @@ int main(int argc, char **argv) {
                 40, 0.001);
         cornerSubPix(ground, corners, winSize, zeroZone, termCrit);
         vector<Point2f> objPts(4), imgPts(4);
-//		objPts[0].x = 0;
-//		objPts[0].y = 0;
-//		objPts[1].x = (boardSize.width - 1) * squareSize;
-//		objPts[1].y = 0;
-//		objPts[2].x = 0;
-//		objPts[2].y = (boardSize.height - 1) * squareSize;
-//		objPts[3].x = (boardSize.width - 1) * squareSize;
-//		objPts[3].y = (boardSize.height - 1) * squareSize;
         cv::Size imageBoardSize((boardSize.width - 1) * squareSize,
                 (boardSize.height - 1) * squareSize);
         //cv::Size imageSize = shown.size();
@@ -569,16 +561,13 @@ int main(int argc, char **argv) {
         imgPts[2] = corners[(boardSize.height - 1) * boardSize.width];
         imgPts[3] = corners[(boardSize.height) * boardSize.width - 1];
 
-        //testFunction(objPts, imgPts);
 
         perspTrans = getPerspectiveTransform(objPts, imgPts);
         perspTrans.at<double>(Point(2, 2)) = height;
-//std::cerr<<imageBoardSize<<" "<<imageSize<<std::endl;
 
         cv::Mat zeroBird;
         warpPerspective(greyNewIn(lowerRoi), zeroBird, perspTrans,
                 greyNewIn.size(), INTER_LINEAR | WARP_INVERSE_MAP);
-        //  cv::imshow("zeroBird", zeroBird);
         cv::Mat rvec, tvec;
 
         std::vector<Point3f> mCorners;
@@ -589,9 +578,6 @@ int main(int argc, char **argv) {
                 std::cerr << mCorners.back() << std::endl;
             }
         }
-
-        //	testFunction(mCorners, corners);
-        //	printMatrix(intrinistics);
 
         cv::solvePnP(mCorners, corners, cameraMatrix, distortionCoeffs, rvec,
                 tvec, false, CV_ITERATIVE);
@@ -610,20 +596,6 @@ int main(int argc, char **argv) {
         {
             cv::Mat invT = getT(invRt);
 
-            //cv::Point2f tran(imageSize.width - invT.at<double>(0),imageSize.height- invT.at<double>(1));
-            //
-            //		objPts[0].x = 0 + tran.x;
-            //		objPts[0].y = 0 + tran.y;
-            //		objPts[1].x = (boardSize.width - 1) * squareSize + tran.x;
-            //		objPts[1].y = 0 + tran.x;
-            //		objPts[2].x = 0 + tran.y;
-            //		objPts[2].y = (boardSize.height - 1) * squareSize + tran.y;
-            //		objPts[3].x = (boardSize.width - 1) * squareSize + tran.x;
-            //		objPts[3].y = (boardSize.height - 1) * squareSize + tran.y;
-//
-//			double alpha = asin(-invRt.at<double>(0, 2));
-//			double gamma = asin(-invRt.at<double>(0, 1) / cos(alpha))*360/2/CV_PI;
-
             cv::Mat z = invRt(cv::Range(0, 3), cv::Range(2, 3));
             std::cerr << z << std::endl << cv::Vec3d(z);
             z.at<double>(2) = 0;
@@ -636,32 +608,18 @@ int main(int argc, char **argv) {
             std::cerr << gamma << std::endl;
             gamma *= 180 / CV_PI;
             cv::Mat rMatN = cv::getRotationMatrix2D(objPts[0], -gamma, 1);
-//            cv::Mat rMatP = cv::getRotationMatrix2D(objPts[0], gamma, 1);
 
-            //          cv::Mat homN, homP;
             cv::Mat homN;
 
-//            std::vector<cv::Point2f> rPointsN, rPointsP;
             std::vector<cv::Point2f> rPointsN;
             cv::transform(objPts, rPointsN, rMatN);
             homN = cv::getPerspectiveTransform(rPointsN, imgPts);
-//            cv::transform(objPts, rPointsP, rMatP);
-//            homP = cv::getPerspectiveTransform(rPointsP, imgPts);
 
             std::cerr << gamma << std::endl;
-//			std::cerr << rPoints[0] << std::endl << rPoints[1] << std::endl
-//				 << rPoints[2] << std::endl << rPoints[3] << std::endl;
 
-            //     cv::Mat pBird, nBird;
             cv::Mat nBird;
-
-//            warpPerspective(greyNewIn(lowerRoi), pBird, homP, greyNewIn.size(),
-//                    INTER_LINEAR | WARP_INVERSE_MAP);
-            warpPerspective(greyNewIn(lowerRoi), nBird, homN, greyNewIn.size(),
+           warpPerspective(greyNewIn(lowerRoi), nBird, homN, greyNewIn.size(),
                     INTER_LINEAR | WARP_INVERSE_MAP);
-//            circle(nBird, rPointsN[0], 2, Scalar::all(0), 3, 1);
-//            imshow("pBird", pBird);
-//            imshow("nBird", nBird);
             perspTrans = homN.clone();
         }
     }
