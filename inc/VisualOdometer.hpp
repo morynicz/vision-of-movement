@@ -33,8 +33,6 @@
 class VisualOdometer {
 	RotationReader *_rotationReader;
 	TranslationReader *_translationReader;
-	std::list<FeatureFilter*> _filters;
-	std::vector<std::list<cv::Point2f> > trackedFeatures;
 	int _featuresNumber;
 	int _horizonHeight;
 	int _deadZoneWidth;
@@ -42,10 +40,11 @@ class VisualOdometer {
 public:
 	VisualOdometer(const RotationReader &rotationReader,
 			const TranslationReader &translationReader,
-			const std::list<FeatureFilter*> filters,
 			const int &horizonHeight, const int &deadZoneWidth,
 			const int &featuresNumber);
 	cv::Point3f calculateDisplacement(const cv::Mat &newFrame);
+	std::vector<std::list<cv::Point2f> > getRotationFeatures()const;
+	std::vector<std::list<cv::Point2f> > getTranslationFeatures() const;
 	virtual ~VisualOdometer();
 };
 

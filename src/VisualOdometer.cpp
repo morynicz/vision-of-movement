@@ -22,34 +22,35 @@ VisualOdometer::~VisualOdometer() {
 		delete _rotationReader;
 	}
 
-	for (std::list<FeatureFilter*>::iterator it = _filters.begin();
-			_filters.end() != it; ++it) {
-		if (NULL != *it) {
-			delete *it;
-		}
-	}
 }
 
 VisualOdometer::VisualOdometer(const RotationReader &rotationReader,
 		const TranslationReader &translationReader,
-		const std::list<FeatureFilter*> filters, const int &horizonHeight,
+	 const int &horizonHeight,
 		const int &deadZoneWidth, const int &featuresNumber) :
 		_featuresNumber(featuresNumber), _horizonHeight(horizonHeight), _deadZoneWidth(
 				deadZoneWidth) {
 	_translationReader = translationReader.constructCopy();
 	_rotationReader = rotationReader.constructCopy();
 
-	for (std::list<FeatureFilter*>::const_iterator it = filters.begin();
-			filters.end() != it; ++it) {
-		_filters.push_back(*it);
-	}
 }
 
 cv::Point3f VisualOdometer::calculateDisplacement(const cv::Mat &newFrame) {
 	cv::Point3f result(0, 0, 0);
-
-	double alpha = _rotationReader->readRotation(newFrame);
-	result = _translationReader->readTranslation(newFrame, alpha);
+	  cv::Rect lowerRoi(cv::Point2f(0, _horizonHeight + _deadZoneWidth),
+	            cv::Size(newFrame.cols, newFrame.rows - _horizonHeight - _deadZoneWidth));
+	    cv::Rect upperRoi(cv::Point2f(0, 0),
+	            cv::Size(newFrame.cols, _horizonHeight - _deadZoneWidth));
+	double alpha = _rotationReader->readRotation(newFrame(upperRoi));
+	result = _translationReader->readTranslation(newFrame(lowerRoi), alpha);
 
 	return result;
+}
+
+std::vector<std::list<cv::Point2f> > VisualOdometer::getRotationFeatures()const{
+    return _rotationReader->getTrackedFeatures();
+}
+
+std::vector<std::list<cv::Point2f> > VisualOdometer::getTranslationFeatures() const{
+    return _translationReader->getTrackedFeatures();
 }
