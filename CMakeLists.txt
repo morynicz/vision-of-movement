@@ -11,12 +11,14 @@ add_executable(visualOdometer src/OdometerMain.cpp src/VisualOdometer.cpp src/Pr
 add_library(featureFilters src/FeatureFilter.cpp src/SmoothFilter.cpp src/ImageEdgeFilter.cpp src/TrimHistoryFilter.cpp src/ConvenienceFunctions.cpp)
 add_library(translationReaders src/TranslationReader.cpp src/BirdsEyeTranslationReader.cpp)
 add_library(rotationReaders src/RotationReader.cpp src/TangentRotationReader.cpp)
+add_library(movementReaders src/MovementReader.cpp)
 add_library(featureExtractors src/FeatureExtractor.cpp src/ShiThomasFeatureExtractor.cpp src/ConvenienceFunctions.cpp)
 add_library(featureTrackers src/FeatureTracker.cpp src/LucasCandaePyramidTracker.cpp)
 
 target_link_libraries(featureExtractors opencv_core opencv_video opencv_imgproc)
 target_link_libraries(featureTrackers opencv_core opencv_video)
-target_link_libraries(translationReaders featureFilters)
+target_link_libraries(translationReaders featureFilters movementReaders)
+target_link_libraries(rotationReaders movementReaders)
 
 target_link_libraries(visualOdometer opencv_core opencv_highgui opencv_imgproc opencv_calib3d opencv_video featureFilters featureExtractors featureTrackers translationReaders rotationReaders)
 

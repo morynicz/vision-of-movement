@@ -15,16 +15,18 @@
 #include "FeatureExtractor.hpp"
 #include "FeatureTracker.hpp"
 #include "FeatureFilter.hpp"
+#include "MovementReader.hpp"
 
-class RotationReader {
+class RotationReader : public MovementReader{
 protected:
-	std::vector<std::list<cv::Point2f> > _trackedFeatures;
-	FeatureTracker *_tracker;
-	FeatureExtractor *_extractor;
-	cv::Mat _oldFrame;
-	std::list<FeatureFilter*> _filters;
+	RotationReader(const FeatureTracker &tracker,
+	                const FeatureExtractor &extractor,
+	                const std::list<FeatureFilter*> &filters,
+	                const unsigned int &maxFeatures,
+	                const std::vector<std::list<cv::Point2f> > &trackedFeatures =
+	                        std::vector<std::list<cv::Point2f> >());
+	RotationReader(const RotationReader &toCopy);
 public:
-	RotationReader();
 	virtual RotationReader *constructCopy() const=0;
 	virtual float readRotation(const cv::Mat &newFrame)=0;
 	virtual ~RotationReader();

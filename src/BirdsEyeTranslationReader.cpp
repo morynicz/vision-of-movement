@@ -19,51 +19,30 @@ bool verticalPoint2Compare(cv::Point2f p1, cv::Point2f p2) {
 	return p1.y < p2.y;
 }
 
-cv::Mat drawFeatureHistory(const cv::Mat &newImage,
-		std::vector<std::list<cv::Point2f> > featureHistory);
-
-//TODO: rememmber to mke this rotation radius ini valid
-BirdsEyeTranslationReader::BirdsEyeTranslationReader(const cv::Mat &homography,
-		const FeatureExtractor &extractor, const FeatureTracker &tracker,
-		const unsigned int& maxFeatures,
-		const std::list<FeatureFilter*>& filters, cv::Point2f rotationCentre,
-		const cv::Size& imageSize, const double &margin) :
-		_maxFeatures(maxFeatures), _rotationCenter(rotationCentre) {
-	_homography = homography.clone();
-	_tracker = tracker.constructCopy();
-	_extractor = extractor.constructCopy();
-	for (std::list<FeatureFilter*>::const_iterator it = filters.begin();
-			it != filters.end(); ++it) {
-		_filters.push_back((*it)->constructCopy());
-	}
-	_filters.push_front(new ImageEdgeFilter(homography, imageSize, margin));
+BirdsEyeTranslationReader::BirdsEyeTranslationReader(
+        const cv::Mat &homography, const FeatureExtractor &extractor,
+        const FeatureTracker &tracker,
+        const unsigned int& maxFeatures,
+        const std::list<FeatureFilter*>& filters,
+        cv::Point2f rotationCentre, const cv::Size& imageSize,
+        const double &margin, const cv::Size &viewSize) :
+        TranslationReader(tracker, extractor, filters, maxFeatures), _rotationCenter(
+                rotationCentre), _viewSize(viewSize), _homography(
+                homography.clone()) {
+    _filters.push_front(
+            new ImageEdgeFilter(homography, imageSize, margin));
 
 }
 
 BirdsEyeTranslationReader::BirdsEyeTranslationReader(
-		const BirdsEyeTranslationReader &toCopy) :
-		_homography(toCopy._homography), _translations(toCopy._translations), _maxFeatures(
-				toCopy._maxFeatures), _rotationCenter(toCopy._rotationCenter) {
-	_trackedFeatures = toCopy._trackedFeatures;
-	_tracker = toCopy._tracker->constructCopy();
-	_extractor = toCopy._extractor->constructCopy();
-	for (std::list<FeatureFilter*>::const_iterator it = toCopy._filters.begin();
-			it != toCopy._filters.end(); ++it) {
-		_filters.push_back((*it)->constructCopy());
-	}
+        const BirdsEyeTranslationReader &toCopy) :
+        TranslationReader(toCopy), _translations(
+                toCopy._translations), _rotationCenter(
+                toCopy._rotationCenter), _viewSize(toCopy._viewSize), _homography(
+                toCopy._homography) {
 }
 
 BirdsEyeTranslationReader::~BirdsEyeTranslationReader() {
-	if (NULL != _tracker) {
-		delete _tracker;
-	}
-	if (NULL != _extractor) {
-		delete _extractor;
-	}
-	for (std::list<FeatureFilter*>::const_iterator it = _filters.begin();
-			it != _filters.end(); ++it) {
-		delete *it;
-	}
 }
 
 TranslationReader *BirdsEyeTranslationReader::constructCopy() const {
@@ -147,3 +126,4 @@ cv::Mat drawFeatureHistory(const cv::Mat &newImage,
 	}
 	return result;
 }
+

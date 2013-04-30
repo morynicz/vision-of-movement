@@ -11,10 +11,10 @@
 #include <TranslationReader.hpp>
 
 class BirdsEyeTranslationReader: public TranslationReader {
-	cv::Mat _homography;
 	std::vector<cv::Point2f> _translations;
-	unsigned int _maxFeatures;
 	cv::Point2f _rotationCenter;
+	cv::Size _viewSize;
+	cv::Mat _homography;
 	std::vector<cv::Point2f> computeTranslationVectors(
 			const cv::Mat &rotationMatrix);
 	void filterBoarderFeatures();
@@ -25,7 +25,7 @@ public:
 			const FeatureExtractor &extractor, const FeatureTracker &tracker,
 			const unsigned int& maxFeatures,
 			const std::list<FeatureFilter*>& filters,
-			cv::Point2f rotationCentre,const cv::Size &imageSize,const double &margin);
+			cv::Point2f rotationCentre,const cv::Size &imageSize,const double &margin,const cv::Size &viewSize = cv::Size(1000,1000));
 	virtual TranslationReader *constructCopy() const;
 	virtual cv::Point3f readTranslation(const cv::Mat &newFrame,
 			const double& rotation);

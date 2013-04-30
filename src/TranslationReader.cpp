@@ -7,12 +7,14 @@
 
 #include "TranslationReader.hpp"
 
-TranslationReader::TranslationReader() {
-	// TODO Auto-generated constructor stub
+TranslationReader::TranslationReader(const FeatureTracker &tracker,
+        const FeatureExtractor &extractor,
+        const std::list<FeatureFilter*> &filters,
+        const unsigned int &maxFeatures,
+        const std::vector<std::list<cv::Point2f> > &trackedFeatures) :
+        MovementReader(tracker,extractor,filters,maxFeatures,trackedFeatures){}
 
-}
+TranslationReader::TranslationReader(const TranslationReader& toCopy): MovementReader(toCopy){}
 
-TranslationReader::~TranslationReader() {
-	// TODO Auto-generated destructor stub
-}
+TranslationReader::~TranslationReader() {}
 
