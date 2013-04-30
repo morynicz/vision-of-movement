@@ -90,40 +90,22 @@ cv::Point3f BirdsEyeTranslationReader::readTranslation(const cv::Mat &newFrame,
 }
 
 std::vector<cv::Point2f> BirdsEyeTranslationReader::computeTranslationVectors(
-		const cv::Mat& rotationMatrix) {
-	std::vector<cv::Point2f> result(_trackedFeatures.size());
-	std::vector<cv::Point2f> oldFeatures(_trackedFeatures.size()), newFeatures(
-			_trackedFeatures.size());
-	std::vector<cv::Point2f> newTransformed(newFeatures.size());
+        const cv::Mat& rotationMatrix) {
+    std::vector<cv::Point2f> result(_trackedFeatures.size());
+    std::vector<cv::Point2f> oldFeatures(_trackedFeatures.size()),
+            newFeatures(_trackedFeatures.size());
+    std::vector<cv::Point2f> newTransformed(newFeatures.size());
 
-	for (unsigned int i = 0; i < result.size(); ++i) { //Highly susceptible to bugs
-		oldFeatures[i] = _trackedFeatures[i].front();
-		newFeatures[i] = *(++_trackedFeatures[i].begin());
-	}
+    for (unsigned int i = 0; i < result.size(); ++i) { //Highly susceptible to bugs
+        oldFeatures[i] = _trackedFeatures[i].front();
+        newFeatures[i] = *(++_trackedFeatures[i].begin());
+    }
 
-	cv::transform(newFeatures, newTransformed, rotationMatrix);
-	for (unsigned int i = 0; i < result.size(); ++i) {
-		result[i] = newTransformed[i] - oldFeatures[i];
-	}
+    cv::transform(newFeatures, newTransformed, rotationMatrix);
+    for (unsigned int i = 0; i < result.size(); ++i) {
+        result[i] = newTransformed[i] - oldFeatures[i];
+    }
 
-	return result;
-}
-
-cv::Mat drawFeatureHistory(const cv::Mat &newImage,
-		std::vector<std::list<cv::Point2f> > featureHistory) {
-	int radius = 5;
-	cv::Mat result = newImage.clone();
-	for (int i = 0; i < featureHistory.size(); ++i) {
-		cv::circle(result, featureHistory[i].front(), radius,
-				cv::Scalar(100, 0, 100), -1, 8, 0);
-		std::list<cv::Point2f>::iterator itb = featureHistory[i].begin();
-		std::list<cv::Point2f>::iterator ite = itb;
-		if (!featureHistory.size() < 2) {
-			for (ite++; ite != featureHistory[i].end(); ++ite, ++itb) {
-				cv::line(result, *ite, *itb, CV_RGB(100,0,0), 1, CV_AA);
-			}
-		}
-	}
-	return result;
+    return result;
 }
 
