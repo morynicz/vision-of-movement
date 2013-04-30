@@ -11,14 +11,17 @@
 #include "FeatureFilter.hpp"
 
 class SmoothFilter: public virtual FeatureFilter {
-	double _maxDeviation;
-	double _deviantThreshold;
-public:
-	SmoothFilter(const double &maxDeviation,const double &maxDeviants);
-	virtual ~SmoothFilter();
-	virtual FeatureFilter *constructCopy() const;
-	virtual std::vector<std::list<cv::Point2f> > filterFeatures(
-			const std::vector<std::list<cv::Point2f> > &features);
+        double _maxDeviation;
+        double _deviantThreshold;
+        double _minLength;
+    public:
+        SmoothFilter(const double &maxDeviation, const double &maxDeviants,
+                const double &minLength);
+        SmoothFilter(const SmoothFilter &toCopy);
+        virtual ~SmoothFilter();
+        virtual FeatureFilter *constructCopy() const;
+        virtual std::vector<std::list<cv::Point2f> > filterFeatures(
+                const std::vector<std::list<cv::Point2f> > &features);
 };
 
 #endif /* SMOOTHFILTER_H_ */
