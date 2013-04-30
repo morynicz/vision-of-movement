@@ -30,7 +30,7 @@ TangentRotationReader::TangentRotationReader(
 }
 
 RotationReader *TangentRotationReader::constructCopy() const {
-	return new TangentRotationReader(*this);
+    return new TangentRotationReader(*this);
 }
 
 float TangentRotationReader::readRotation(const cv::Mat &newFrame) {
