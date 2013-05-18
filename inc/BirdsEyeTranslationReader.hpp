@@ -15,7 +15,6 @@ class BirdsEyeTranslationReader: public TranslationReader {
         cv::Point2f _rotationCenter;
         cv::Size _viewSize;
         cv::Mat _homography;
-        std::list<std::vector<cv::Point2f> > temp;
         std::vector<cv::Point2f> computeTranslationVectors(
                 const cv::Mat &rotationMatrix);
         void filterBoarderFeatures();
