@@ -150,7 +150,7 @@ int main() {
             cv::imshow("main", input);
             control = cv::waitKey(1);
         } while ('q' != control);
-
+        cv::waitKey(0);
         for (std::list<cv::Point3f>::iterator it = positions.begin();
                 positions.end() != it; ++it) {
             std::cerr << *it << std::endl;
