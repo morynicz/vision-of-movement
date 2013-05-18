@@ -62,7 +62,7 @@ cv::Point3f BirdsEyeTranslationReader::readTranslation(
     cv::Mat newTransformed;
     cv::Point3f result(0, 0, rotationAngle);
     cv::Mat rotationMatrix = cv::getRotationMatrix2D(_rotationCenter,
-            rotationAngle, 1);
+            -rotationAngle * 180 / CV_PI, 1);
     int vectorHalf = 0;
     cv::warpPerspective(newFrame, newTransformed, _homography,
             newFrame.size(), cv::INTER_LINEAR | cv::WARP_INVERSE_MAP);
