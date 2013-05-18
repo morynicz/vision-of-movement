@@ -240,9 +240,10 @@ void getHomographyRtMatrixAndRotationCenter(
 //                << cv::Point2d(rtMatrix.at<double>(0, 3),
 //                        rtMatrix.at<double>(1, 3)) << std::endl;
 
+// VERY IMPORTANT: in bird's eye view, the x and y axes are swapped!
         rotationCenter = rPointsN[0]
-                + cv::Point2f(rtMatrix.at<double>(0, 3),
-                        rtMatrix.at<double>(1, 3));
+                + cv::Point2f(rtMatrix.at<double>(1, 3),
+                        rtMatrix.at<double>(0, 3));
         // +cv::Point2f( 0,-407);
 
         homography = homN.clone();
