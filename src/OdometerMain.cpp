@@ -43,7 +43,6 @@ int main() {
 
     cv::Mat homography;
 
-    //cv::Size boardSize(10, 7);
     cv::Size boardSize(9, 6);
     cv::VideoCapture capture(1);
 
@@ -101,6 +100,7 @@ int main() {
                 cameraMatrix, distortionCoefficients,
                 chessboardHeight, homography, rotationCenter,
                 rtMatrix);
+
         cerr << "got transform and rt" << endl;
         printMatrix(cameraMatrix, true);
         TangentRotationReader rotationReader(tracker, extractor,
@@ -124,8 +124,8 @@ int main() {
         cv::namedWindow("map", CV_WINDOW_KEEPRATIO);
         std::vector<std::list<cv::Point2f> > featuresRot;
         std::vector<std::list<cv::Point2f> > featuresGround;
+
         do {
-            std::cerr << "p" << std::endl;
             cv::Point3f displacement;
             capture >> input;
 
@@ -135,22 +135,17 @@ int main() {
             displacement = odo.calculateDisplacement(grey);
             currentPosition = currentPosition + displacement;
             positions.push_front(currentPosition);
-           std::cerr << "d: " << displacement << std::endl;
             cv::Mat map = drawTraveledRoute(positions);
-            //printMatrix(map);
-            std::cerr << currentPosition << std::endl << map.size()
-                    << std::endl;
 
             featuresRot = odo.getRotationFeatures();
             featuresGround = odo.getTranslationFeatures();
 
-            drawFeaturesUpperAndLower(input, featuresRot, cv::Mat(),
-                    featuresGround, homography, horizon, deadZone);
-
+            drawFeaturesUpperAndLower(undistorted, featuresRot,
+                    cv::Mat(), featuresGround, homography, horizon,
+                    deadZone);
             cv::imshow("map", map);
             cv::imshow("main", input);
             control = cv::waitKey(1);
-            std::cerr << "k" << std::endl;
         } while ('q' != control);
 
         for (std::list<cv::Point3f>::iterator it = positions.begin();
