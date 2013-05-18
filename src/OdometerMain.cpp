@@ -51,8 +51,8 @@ int main() {
     LucasCandaePyramidTracker tracker(winSizeLuc, maxLevel, flagsLuc,
             termCritLuc, minEigThr, maxErrVal);
 
-    unsigned int maxFeatures = 500;
-    int maxHistoryLength = 9;
+    unsigned int maxFeatures = 100;
+    int maxHistoryLength = 8;
     double maxDeviation = CV_PI / 16;
     double maxDeviants = maxFeatures / 4;
     double minLength = 10;
@@ -75,22 +75,27 @@ int main() {
             40, 0.001);
     float squareSize = 25;
     std::list<cv::Point3f> positions;
-    cv::Point2f rotationCenter;
+    cv::Point2d rotationCenter;
     cv::Mat rtMatrix;
     cv::Point3f currentPosition(0, 0, 0);
-    double margin = 5;
+    double margin = 30;
+    double chessboardHeight = 1;
 
     positions.push_back(currentPosition);
     try {
         cv::Mat cameraMatrix, distortionCoefficients;
         getCameraParameters("../sphereAF.yml", rectifyMaps,
                 cameraMatrix, distortionCoefficients, imageSize);
+//        getCameraParameters("../kart.yml", rectifyMaps,
+//                cameraMatrix, distortionCoefficients, imageSize);
+
         capture.set(CV_CAP_PROP_FRAME_WIDTH, imageSize.width);
         capture.set(CV_CAP_PROP_FRAME_HEIGHT, imageSize.height);
         horizon = imageSize.height / 2;
         deadZone = 0;
         calibrateParameters(capture, rectifyMaps, horizon, deadZone,
                 imageSize);
+
         std::vector<cv::Point2f> corners = getChessboardCorners(
                 capture, rectifyMaps, horizon, deadZone, boardSize,
                 imageSize, winSizeHom, zeroZoneHom, termCritHom);
