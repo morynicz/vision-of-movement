@@ -199,19 +199,22 @@ cv::Point3f BirdsEyeTranslationReader::readTranslation(
                 _trackedFeatures = (*it)->filterFeatures(
                         _trackedFeatures);
             }
-//			cv::Mat post = drawFeatureHistory(newTransformed, _trackedFeatures);
-
-            std::vector<cv::Point2f> translations =
-                    computeTranslationVectors(rotationMatrix);
-            vectorHalf = translations.size() / 2;
-            std::nth_element(translations.begin(),
-                    translations.begin() + vectorHalf,
-                    translations.end(), horizontalPoint2Compare);
-            result.x = translations[vectorHalf].x;
-            std::nth_element(translations.begin(),
-                    translations.begin() + vectorHalf,
-                    translations.end(), verticalPoint2Compare);
-            result.y = translations[vectorHalf].y;
+//			cv::Mat post = newTransformed.clone();
+//			drawFeatureHistory(post, _trackedFeatures,3);
+//            cv::imshow("c1", post);
+            if (!_trackedFeatures.empty()) {
+                std::vector<cv::Point2f> translations =
+                        computeTranslationVectors(rotationMatrix);
+                vectorHalf = translations.size() / 2;
+                std::nth_element(translations.begin(),
+                        translations.begin() + vectorHalf,
+                        translations.end(), horizontalPoint2Compare);
+                result.x = translations[vectorHalf].x;
+                std::nth_element(translations.begin(),
+                        translations.begin() + vectorHalf,
+                        translations.end(), verticalPoint2Compare);
+                result.y = translations[vectorHalf].y;
+            }
         }
 //
 //    cv::Mat newRot;
