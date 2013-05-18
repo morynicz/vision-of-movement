@@ -103,7 +103,9 @@ int main() {
         cerr << "got transform and rt" << endl;
         printMatrix(cameraMatrix, true);
         TangentRotationReader rotationReader(tracker, extractor,
-                filters, maxFeatures, cameraMatrix.at<double>(0, 0));
+                filters, maxFeatures, cameraMatrix.at<double>(0, 0),
+                cv::Size(imageSize.width, horizon - deadZone),
+                margin);
         BirdsEyeTranslationReader transReader(homography, extractor,
                 tracker, maxFeatures, filters, rotationCenter,
                 imageSize, margin);
