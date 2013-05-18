@@ -128,6 +128,9 @@ int main() {
         do {
             cv::Point3f displacement;
             capture >> input;
+            if (input.empty()) {
+                continue;
+            }
 
             cv::remap(input, undistorted, rectifyMaps[0],
                     rectifyMaps[1], cv::INTER_LINEAR);
