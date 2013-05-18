@@ -8,10 +8,6 @@
 #include "TangentRotationReader.hpp"
 #include "ImageEdgeFilter.hpp"
 
-#include "DrawingFunctions.hpp"
-#include <opencv2/highgui/highgui.hpp>
-#include <iostream>
-
 TangentRotationReader::TangentRotationReader(
         const FeatureTracker &tracker,
         const FeatureExtractor &extractor,
@@ -55,10 +51,7 @@ float TangentRotationReader::readRotation(const cv::Mat &newFrame) {
                     _trackedFeatures = (*it)->filterFeatures(
                             _trackedFeatures);
                 }
-//            cv::Mat shown = newFrame.clone();
-//            drawFeatureHistory(shown, _trackedFeatures, 5);
-//            cv::imshow("tangent", shown);
-//            cv::waitKey(1);
+
                 if (!_trackedFeatures.empty()) {
                     std::vector<float> rotations =
                             computeRotationVectors();
