@@ -146,8 +146,11 @@ int main() {
             drawFeaturesUpperAndLower(undistorted, featuresRot,
                     cv::Mat(), featuresGround, homography, horizon,
                     deadZone);
+            cv::line(input, cv::Point(imageSize.width / 2, 0),
+                    cv::Point(imageSize.width / 2, imageSize.height),
+                    CV_RGB(255,0,0), 1, 8, 0);
             cv::imshow("map", map);
-            cv::imshow("main", input);
+            cv::imshow("main", undistorted);
             control = cv::waitKey(1);
         } while ('q' != control);
         cv::waitKey(0);
