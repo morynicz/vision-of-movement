@@ -13,6 +13,7 @@
 
 class ImageEdgeFilter: public FeatureFilter {
 	std::vector<double> _a;
+	std::vector<double> _b;
 	std::vector<double> _c;
 	double _margin;
 public:
