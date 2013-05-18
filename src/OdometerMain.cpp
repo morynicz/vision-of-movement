@@ -109,7 +109,9 @@ int main() {
                 margin);
         BirdsEyeTranslationReader transReader(homography, extractor,
                 tracker, maxFeatures, filters, rotationCenter,
-                imageSize, margin);
+                cv::Size(imageSize.width,
+                        imageSize.height - horizon - deadZone),
+                margin);
         cerr << "got birdy" << endl;
         VisualOdometer odo(rotationReader, transReader, horizon,
                 deadZone, featuresNumber);
