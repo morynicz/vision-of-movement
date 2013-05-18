@@ -96,9 +96,10 @@ int main() {
                 capture, rectifyMaps, horizon, deadZone, boardSize,
                 imageSize, winSizeHom, zeroZoneHom, termCritHom);
         cerr << "got corners" << endl;
-        getHomographyAndRtMatrix(corners, imageSize, boardSize,
-                squareSize, horizon, deadZone, cameraMatrix,
-                distortionCoefficients, homography, rotationCenter,
+        getHomographyRtMatrixAndRotationCenter(corners, imageSize,
+                boardSize, squareSize, horizon, deadZone,
+                cameraMatrix, distortionCoefficients,
+                chessboardHeight, homography, rotationCenter,
                 rtMatrix);
         cerr << "got transform and rt" << endl;
         printMatrix(cameraMatrix, true);
