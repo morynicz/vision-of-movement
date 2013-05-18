@@ -54,36 +54,70 @@ void printMatrix(const cv::Mat &arg, bool printValues) {
     std::cerr << "depth: " << depth << std::endl;
 
     if (printValues) {
-        std::cerr<<"cv"<<arg<<"/cv"<<std::endl;
-       /* for (int i = 0; i < arg.rows; ++i) {
-            for (int j = 0; j < arg.cols; ++j) {
-                switch (type) {
-                    case CV_8U:
-                        std::cerr << (int) arg.at<unsigned char>(i, j);
-                        break;
-                    case CV_8S:
-                        std::cerr << arg.at<char>(i, j);
-                        break;
-                    case CV_16U:
-                        std::cerr << arg.at<unsigned short int>(i, j);
-                        break;
-                    case CV_16S:
-                        std::cerr << arg.at<short int>(i, j);
-                        break;
-                    case CV_32S:
-                        std::cerr << arg.at<long int>(i, j);
-                        break;
-                    case CV_32F:
-                        std::cerr << arg.at<float>(i, j);
-                        break;
-                    case CV_64F:
-                        std::cerr << arg.at<double>(i, j);
-                        break;
-                }
-                std::cerr << " ";
-            }
-            std::cerr << std::endl;
-        }*/
+        std::cerr << arg << std::endl;
+        /* for (int i = 0; i < arg.rows; ++i) {
+         for (int j = 0; j < arg.cols; ++j) {
+         switch (type) {
+         case CV_8U:
+         std::cerr << (int) arg.at<unsigned char>(i, j);
+         break;
+         case CV_8S:
+         std::cerr << arg.at<char>(i, j);
+         break;
+         case CV_16U:
+         std::cerr << arg.at<unsigned short int>(i, j);
+         break;
+         case CV_16S:
+         std::cerr << arg.at<short int>(i, j);
+         break;
+         case CV_32S:
+         std::cerr << arg.at<long int>(i, j);
+         break;
+         case CV_32F:
+         std::cerr << arg.at<float>(i, j);
+         break;
+         case CV_64F:
+         std::cerr << arg.at<double>(i, j);
+         break;
+         }
+         std::cerr << " ";
+         }
+         std::cerr << std::endl;
+         }*/
     }
+}
+
+void deconstructPointVector(const std::vector<cv::Point3d> &input,
+        std::vector<double> &x, std::vector<double> &y,
+        std::vector<double> &z) {
+    x.resize(input.size());
+    y.resize(input.size());
+    z.resize(input.size());
+    for (unsigned int i = 0; i < input.size(); ++i) {
+        x[i] = input[i].x;
+        y[i] = input[i].y;
+        z[i] = input[i].z;
+    }
+
+}
+
+void pointMeanAndVariance(const std::vector<cv::Point3d> &input,
+        cv::Point3d &mean, cv::Point3d &varinace) {
+    std::vector<double> x, y, z;
+    deconstructPointVector(input, x, y, z);
+    meanAndVariance(x, mean.x, varinace.x);
+    meanAndVariance(y, mean.y, varinace.y);
+    meanAndVariance(z, mean.z, varinace.z);
+
+}
+
+cv::Point3d pointMedian(const std::vector<cv::Point3d> &input) {
+    cv::Point3d result;
+    std::vector<double> x, y, z;
+    deconstructPointVector(input, x, y, z);
+    result.x = median(x);
+    result.y = median(y);
+    result.z = median(z);
+    return result;
 }
 
