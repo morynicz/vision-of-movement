@@ -45,6 +45,10 @@ class Catcher {
                 void operator()();
                 ///\brief Destructor
                 ~Camera();
+                ///\brief Method for acquiring cv::VideoCapture properties
+                double get(const int &propId);
+                ///\brief Method for setting cv::VideoCapture properties
+                bool set(const int &propId, const double &value);
         };
         Camera _cam; ///< Object providing the most recent frame
     public:
@@ -61,7 +65,10 @@ class Catcher {
         void operator>>(cv::Mat &frame) {
             catchFrame(frame);
         }
-
+        ///\brief Method for acquiring cv::VideoCapture properties
+        double get(const int &propId);
+        ///\brief Method for setting cv::VideoCapture properties
+        bool set(const int &propId, const double &value);
 };
 
 #endif

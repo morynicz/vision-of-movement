@@ -72,6 +72,20 @@ void Catcher::Camera::operator()() {
     }
 }
 
+///Method for acquiring cv::VideoCapture properties
+///\param propId - property id. To get possible values, see
+///cv::VideoCapture::get documentation
+double Catcher::Camera::get(const int &propId) {
+    return _cam.get(propId);
+}
+///Method for setting cv::VideoCapture properties
+///\param propId - property id. To get possible values, see
+///cv::VideoCapture::set documentation
+///\param value - value to which property @propId will be set
+bool Catcher::Camera::set(const int &propId, const double &value){
+    return _cam.set(propId,value);
+}
+
 /// Initializes mut and thr pointers
 Catcher::Catcher() :
         _mut(NULL), _thr(NULL) {
@@ -136,3 +150,24 @@ void Catcher::catchFrame(cv::Mat& frame) {
     _mut->unlock();
 }
 
+///Method for acquiring cv::VideoCapture properties
+///\param propId - property id. To get possible values, see
+///cv::VideoCapture::get documentation
+double Catcher::get(const int &propId) {
+    double result;
+    _mut->lock();
+    result=_cam.get(propId);
+    _mut->unlock();
+    return result;
+}
+///Method for setting cv::VideoCapture properties
+///\param propId - property id. To get possible values, see
+///cv::VideoCapture::set documentation
+///\param value - value to which property @propId will be set
+bool Catcher::set(const int &propId, const double &value){
+    bool result;
+    _mut->lock();
+    result=_cam.set(propId,value);
+    _mut->unlock();
+    return result;
+}
