@@ -9,7 +9,6 @@
 #ifndef CATCHER_HPP
 #define CATCHER_HPP
 
-using namespace cv;
 
 ///\brief Error code for inability to open a device
 static const int CATCH_CANNOT_OPEN_DEVICE = -1;

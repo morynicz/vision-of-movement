@@ -9,8 +9,8 @@ using namespace std;
 
 /// Constructor for video streams originating from a device
 /// \param nr - number of the device
-/// \param mat - pointer to cv::Mat object which will contain the most recent
-/// frame
+/// \param mat - pointer to cv::Mat object which will contain the most
+/// recent frame
 /// \param mtx - pointer to mutex 
 Catcher::Camera::Camera(const int &nr, cv::Mat *mat,
         boost::mutex *mtx) :
@@ -26,8 +26,8 @@ Catcher::Camera::Camera(const int &nr, cv::Mat *mat,
 
 /// Constructor for video streams originating from a device
 /// \param name - name of video file
-/// \param mat - pointer to cv::Mat object which will contain the most recent
-/// frame
+/// \param mat - pointer to cv::Mat object which will contain the most
+/// recent frame
 /// \param mtx - pointer to mutex 
 Catcher::Camera::Camera(const std::string &name, cv::Mat *mat,
         boost::mutex *mtx) :
@@ -111,7 +111,8 @@ void Catcher::init(const int &nr) {
     _thr = new boost::thread(boost::ref(_cam));
 }
 
-/// Method initializing the object for drawing video stream from a video file
+/// Method initializing the object for drawing video stream from a video
+/// file
 /// \param name - name of file from which the video stream will be read
 void Catcher::init(const std::string& name) {
     if (_thr != NULL) {
@@ -128,7 +129,7 @@ void Catcher::init(const std::string& name) {
     _thr = new boost::thread(boost::ref(_cam));
 }
 
-/// Destructor, ensures that all threads and dynamic objects will be 
+/// Destructor, ensures that all threads and dynamic objects will be
 /// disposed properly
 Catcher::~Catcher() {
     if (_thr) {
@@ -141,8 +142,9 @@ Catcher::~Catcher() {
     }
 }
 
-/// Method which makes a deep copy of most recent frame, and returns it outside
-/// \param frame - object in which the deep copy of most recent frame will 
+/// Method which makes a deep copy of most recent frame, and returns it
+/// outside
+/// \param frame - object in which the deep copy of most recent frame will
 /// be placed
 void Catcher::catchFrame(cv::Mat& frame) {
     _mut->lock();
