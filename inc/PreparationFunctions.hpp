@@ -7,12 +7,13 @@
 #include <list>
 #include <vector>
 
-void calibrateParameters(cv::VideoCapture &capture,
+#include "Catcher.hpp"
+
+void calibrateParameters(Catcher &capture,
         std::vector<cv::Mat> rectifyMaps, int &horizon, int &deadZone,
         const cv::Size &imageSize);
 
-std::vector<cv::Point2f> getChessboardCorners(
-        cv::VideoCapture &capture,
+std::vector<cv::Point2f> getChessboardCorners(Catcher &capture,
         const std::vector<cv::Mat> &rectificationMaps,
         const int &horizon, const int &deadZone,
         const cv::Size &boardSize, const cv::Size &imageSize,

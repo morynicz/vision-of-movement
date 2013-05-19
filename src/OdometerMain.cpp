@@ -11,6 +11,7 @@
 #include "ConvenienceFunctions.hpp"
 #include "ErrorCodes.hpp"
 #include "DrawingFunctions.hpp"
+#include "Catcher.hpp"
 
 #include "opencv2/core/core.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
@@ -44,7 +45,9 @@ int main() {
     cv::Mat homography;
 
     cv::Size boardSize(9, 6);
-    cv::VideoCapture capture(1);
+    //cv::VideoCapture capture(1);
+    Catcher capture;
+    capture.init(1);
 
     ShiThomasFeatureExtractor extractor(qualityLevel, minDistance,
             blockSize, winSizeShi, zeroZone, termCritShi);
@@ -107,7 +110,6 @@ int main() {
                 rtMatrix);
 
         cerr << "got transform and rt" << endl;
-        printMatrix(cameraMatrix, true);
         TangentRotationReader rotationReader(tracker, extractor,
                 filters, maxFeatures, cameraMatrix.at<double>(0, 0),
                 cv::Size(imageSize.width, horizon - deadZone),
@@ -175,7 +177,7 @@ int main() {
     return 0;
 }
 
-void checkPnPMethodStats(cv::VideoCapture &capture,
+void checkPnPMethodStats(Catcher &capture,
         const std::vector<cv::Mat> &rectifyMaps, const int &horizon,
         const int &deadZone, const cv::Size &boardSize,
         const cv::Size &imageSize, const cv::Size &winSize,
