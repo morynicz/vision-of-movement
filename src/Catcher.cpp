@@ -82,8 +82,8 @@ double Catcher::Camera::get(const int &propId) {
 ///\param propId - property id. To get possible values, see
 ///cv::VideoCapture::set documentation
 ///\param value - value to which property @propId will be set
-bool Catcher::Camera::set(const int &propId, const double &value){
-    return _cam.set(propId,value);
+bool Catcher::Camera::set(const int &propId, const double &value) {
+    return _cam.set(propId, value);
 }
 
 /// Initializes mut and thr pointers
@@ -91,6 +91,18 @@ Catcher::Catcher() :
         _mut(NULL), _thr(NULL) {
     _mut = NULL;
     _thr = NULL;
+}
+
+/// Opens video device
+Catcher::Catcher(const int &nr) :
+        _mut(new boost::mutex), _cam(Camera(nr, &_fr, _mut)), _thr(
+                new boost::thread(boost::ref(_cam))) {
+}
+
+/// Opens video stream
+Catcher::Catcher(const std::string &name) :
+        _mut(new boost::mutex), _cam(Camera(name, &_fr, _mut)), _thr(
+                new boost::thread(boost::ref(_cam))) {
 }
 
 /// Method initializing the object for drawing video stream from a device 
@@ -158,7 +170,7 @@ void Catcher::catchFrame(cv::Mat& frame) {
 double Catcher::get(const int &propId) {
     double result;
     _mut->lock();
-    result=_cam.get(propId);
+    result = _cam.get(propId);
     _mut->unlock();
     return result;
 }
@@ -166,10 +178,10 @@ double Catcher::get(const int &propId) {
 ///\param propId - property id. To get possible values, see
 ///cv::VideoCapture::set documentation
 ///\param value - value to which property @propId will be set
-bool Catcher::set(const int &propId, const double &value){
+bool Catcher::set(const int &propId, const double &value) {
     bool result;
     _mut->lock();
-    result=_cam.set(propId,value);
+    result = _cam.set(propId, value);
     _mut->unlock();
     return result;
 }

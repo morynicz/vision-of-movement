@@ -21,7 +21,6 @@ static const int CATCH_CANNOT_OPEN_FILE = -2;
 class Catcher {
         cv::Mat _fr; ///< Most recent frame
         boost::mutex *_mut;
-        boost::thread *_thr;
 
         ///\brief Class used to ensure, that video streams buffer is empty
         class Camera {
@@ -50,9 +49,15 @@ class Catcher {
                 bool set(const int &propId, const double &value);
         };
         Camera _cam; ///< Object providing the most recent frame
+        boost::thread *_thr;
+
     public:
         ///\brief Constructor initialising pointer fields
         Catcher();
+        ///\brief Constructor for stream from video device
+        Catcher(const int &nr);
+        ///\brief Constructor for stream from a video file
+        Catcher(const std::string &name);
         ///\brief initialization method for streams from a device
         void init(const int &nr);
         ///\brief initialization method for streams from a file
