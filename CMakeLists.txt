@@ -2,13 +2,13 @@ cmake_minimum_required(VERSION 2.8)
 project(VisualOdometry)
 add_definitions(-Wall -pedantic -g)
 find_package(OpenCV REQUIRED)
-find_package(Boost REQUIRED thread)
+find_package(Boost REQUIRED thread program_options)
 
 set(CMAKE_BUILD_TYPE Debug)
 
 include_directories(inc)
 
-add_executable(visualOdometer src/OdometerMain.cpp src/VisualOdometer.cpp src/PreparationFunctions.cpp src/DrawingFunctions.cpp src/ConvenienceFunctions.cpp) 
+add_executable(visualOdometer src/OdometerMain.cpp src/VisualOdometer.cpp src/PreparationFunctions.cpp src/DrawingFunctions.cpp src/ConvenienceFunctions.cpp src/CvTypesIo.cpp) 
 add_library(featureFilters src/FeatureFilter.cpp src/SmoothFilter.cpp src/ImageEdgeFilter.cpp src/TrimHistoryFilter.cpp src/ConvenienceFunctions.cpp)
 add_library(translationReaders src/TranslationReader.cpp src/BirdsEyeTranslationReader.cpp)
 add_library(rotationReaders src/RotationReader.cpp src/TangentRotationReader.cpp)
@@ -23,7 +23,7 @@ target_link_libraries(translationReaders featureFilters movementReaders)
 target_link_libraries(rotationReaders movementReaders)
 target_link_libraries(capturing boost_thread)
 
-target_link_libraries(visualOdometer opencv_core opencv_highgui opencv_imgproc opencv_calib3d opencv_video featureFilters featureExtractors featureTrackers translationReaders rotationReaders capturing)
+target_link_libraries(visualOdometer opencv_core opencv_highgui opencv_imgproc opencv_calib3d opencv_video featureFilters featureExtractors featureTrackers translationReaders rotationReaders capturing boost_program_options)
 
 add_executable(cameraCalibration src/calibration.cpp)
 target_link_libraries(cameraCalibration opencv_core opencv_highgui opencv_calib3d opencv_imgproc opencv_features2d)

@@ -8,6 +8,17 @@
 #include <vector>
 
 #include "Catcher.hpp"
+#include "CvTypesIo.hpp"
+
+class ChessboardParameters {
+    public:
+        cv::Size winSize;
+        cv::Size zeroZone;
+        float squareSize;
+        double height;
+        cv::Size size;
+        cv::TermCriteria termCrit;
+};
 
 void calibrateParameters(Catcher &capture,
         std::vector<cv::Mat> rectifyMaps, int &horizon, int &deadZone,
@@ -40,4 +51,9 @@ void getCameraParameters(const std::string &fileName,
         std::vector<cv::Mat> &undistortionMaps, cv::Mat& cameraMatrix,
         cv::Mat& distortionCoefficients, cv::Size &imageSize);
 
+cv::FileStorage &operator<<(cv::FileStorage &fs,
+        const ChessboardParameters &chessboard);
+
+void operator>>(const cv::FileNode &node,
+        ChessboardParameters &chessboard);
 #endif

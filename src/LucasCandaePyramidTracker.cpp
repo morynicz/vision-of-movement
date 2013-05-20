@@ -77,3 +77,24 @@ void LucasCandaePyramidTracker::trackFeatures(const cv::Mat &oldInput,
 		}
 	}
 }
+
+cv::FileStorage &operator<<(cv::FileStorage &fs,
+        const LucasKanadeParameters &lucasKanade) {
+    fs << "{" << "maxLevel" << lucasKanade.maxLevel << "flags"
+            << lucasKanade.flags << "winSize" << lucasKanade.winSize
+            << "minEigenvalueThresh"
+            << lucasKanade.minEigenvalueThresh << "maxErrorValue"
+            << lucasKanade.maxErrorValue << "termCrit"
+            << lucasKanade.termCrit << "}";
+    return fs;
+}
+
+void operator>>(const cv::FileNode &node,
+        LucasKanadeParameters &lucasKanade) {
+    node["maxLevel"] >> lucasKanade.maxLevel;
+    node["flags"] >> lucasKanade.flags;
+    node["winSize"] >> lucasKanade.winSize;
+    node["minEigenvalueThresh"] >> lucasKanade.minEigenvalueThresh;
+    node["maxErrorValue"] >> lucasKanade.maxErrorValue;
+    node["termCrit"] >> lucasKanade.termCrit;
+}

@@ -9,6 +9,7 @@
 #define SHITHOMASFEATUREEXTRACTOR_HPP_
 
 #include "FeatureExtractor.hpp"
+#include "CvTypesIo.hpp"
 
 class ShiThomasFeatureExtractor: public FeatureExtractor {
 	double _qualityLevel;
@@ -29,5 +30,22 @@ public:
 			const int & maxCorners)const;
 	virtual ~ShiThomasFeatureExtractor();
 };
+
+class ShiThomasiParameters {
+    public:
+        double qualityLevel;
+        double minDistance;
+        int blockSize;
+        cv::Size winSize;
+        cv::Size zeroZone;
+        cv::TermCriteria termCrit;
+
+};
+
+cv::FileStorage &operator<<(cv::FileStorage &fs,
+        const ShiThomasiParameters &shiThomasi);
+
+void operator>>(const cv::FileNode &node,
+        ShiThomasiParameters &shiThomasi);
 
 #endif /* SHITHOMASFEATUREEXTRACTOR_HPP_ */

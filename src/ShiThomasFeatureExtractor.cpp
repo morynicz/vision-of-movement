@@ -62,3 +62,24 @@ std::vector<cv::Point2f> ShiThomasFeatureExtractor::extractFeatures(
 	}
 	return result;
 }
+
+
+cv::FileStorage &operator<<(cv::FileStorage &fs,
+        const ShiThomasiParameters &shiThomasi) {
+    fs << "{" << "qualityLevel" << shiThomasi.qualityLevel
+            << "minDistance" << shiThomasi.minDistance << "blockSize"
+            << shiThomasi.blockSize << "winSize" << shiThomasi.winSize
+            << "zeroZone" << shiThomasi.zeroZone << "termCriteria"
+            << shiThomasi.termCrit << "}";
+    return fs;
+}
+
+void operator>>(const cv::FileNode &node,
+        ShiThomasiParameters &shiThomasi) {
+    node["blockSize"] >> shiThomasi.blockSize;
+    node["qualityLevel"] >> shiThomasi.qualityLevel;
+    node["minDistance"] >> shiThomasi.minDistance;
+    node["winSize"] >> shiThomasi.winSize;
+    node["zeroZone"] >> shiThomasi.zeroZone;
+    node["termCriteria"] >> shiThomasi.termCrit;
+}

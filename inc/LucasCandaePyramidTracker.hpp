@@ -9,6 +9,7 @@
 #define LUCASCANDAEPYRAMIDTRACKER_HPP_
 
 #include <FeatureTracker.hpp>
+#include "CvTypesIo.hpp"
 
 class LucasCandaePyramidTracker: public FeatureTracker {
 	cv::Size _windowSize;
@@ -30,4 +31,19 @@ public:
 	virtual ~LucasCandaePyramidTracker();
 };
 
+class LucasKanadeParameters {
+    public:
+        int maxLevel;
+        int flags;
+        cv::Size winSize;
+        double minEigenvalueThresh;
+        double maxErrorValue;
+        cv::TermCriteria termCrit;
+};
+
+void operator>>(const cv::FileNode &node,
+        LucasKanadeParameters &lucasKanade);
+
+cv::FileStorage &operator<<(cv::FileStorage &fs,
+        const LucasKanadeParameters &lucasKanade);
 #endif /* LUCASCANDAEPYRAMIDTRACKER_HPP_ */

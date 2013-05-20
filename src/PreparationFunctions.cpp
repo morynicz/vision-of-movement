@@ -314,3 +314,25 @@ void getCameraParameters(const std::string &fileName,
             CV_32FC1, undistortionMaps[0], undistortionMaps[1]);
 
 }
+
+
+cv::FileStorage &operator<<(cv::FileStorage &fs,
+        const ChessboardParameters &chessboard) {
+    fs << "{" << "winSize" << chessboard.winSize << "zeroZone"
+            << chessboard.zeroZone << "squareSize"
+            << chessboard.squareSize << "height" << chessboard.height
+            << "size" << chessboard.size << "termCrit"
+            << chessboard.termCrit << "}";
+    return fs;
+}
+
+void operator>>(const cv::FileNode &node,
+        ChessboardParameters &chessboard) {
+    node["winSize"] >> chessboard.winSize;
+    node["zeroZone"] >> chessboard.zeroZone;
+    node["squareSize"] >> chessboard.squareSize;
+    node["height"] >> chessboard.height;
+    node["size"] >> chessboard.size;
+    node["termCrit"] >> chessboard.termCrit;
+
+}
