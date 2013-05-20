@@ -9,6 +9,10 @@
 #include "ImageEdgeFilter.hpp"
 #include <opencv2/imgproc/imgproc.hpp>
 
+#include "DrawingFunctions.hpp"
+#include <iostream>
+#include <opencv2/highgui/highgui.hpp>
+
 bool horizontalPoint2Compare(cv::Point2f p1, cv::Point2f p2) {
     return p1.x < p2.x;
 }
@@ -80,6 +84,10 @@ cv::Point3f BirdsEyeTranslationReader::readTranslation(
                         translations.begin() + vectorHalf,
                         translations.end(), verticalPoint2Compare);
                 result.y = translations[vectorHalf].y;
+
+//                cv::Mat shown=newTransformed.clone();
+//                drawFeatureHistory(shown,_trackedFeatures,10);
+//                cv::imshow("b1",shown);
             }
         }
     }
