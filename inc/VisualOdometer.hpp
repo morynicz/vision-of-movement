@@ -31,21 +31,19 @@
 #include <cmath>
 
 class VisualOdometer {
-	RotationReader *_rotationReader;
-	TranslationReader *_translationReader;
-	int _featuresNumber;
-	int _horizonHeight;
-	int _deadZoneWidth;
-	cv::RNG _rng;
-public:
-	VisualOdometer(const RotationReader &rotationReader,
-			const TranslationReader &translationReader,
-			const int &horizonHeight, const int &deadZoneWidth,
-			const int &featuresNumber);
-	cv::Point3f calculateDisplacement(const cv::Mat &newFrame);
-	std::vector<std::list<cv::Point2f> > getRotationFeatures()const;
-	std::vector<std::list<cv::Point2f> > getTranslationFeatures() const;
-	virtual ~VisualOdometer();
+        RotationReader *_rotationReader;
+        TranslationReader *_translationReader;
+        int _horizonHeight;
+        int _deadZoneWidth;
+        cv::RNG _rng;
+    public:
+        VisualOdometer(const RotationReader &rotationReader,
+                const TranslationReader &translationReader,
+                const int &horizonHeight, const int &deadZoneWidth);
+        cv::Point3f calculateDisplacement(const cv::Mat &newFrame);
+        std::vector<std::list<cv::Point2f> > getRotationFeatures() const;
+        std::vector<std::list<cv::Point2f> > getTranslationFeatures() const;
+        virtual ~VisualOdometer();
 };
 
 #endif /* VISUALODOMETER_H_ */
