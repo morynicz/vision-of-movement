@@ -21,6 +21,7 @@
 
 #include <string>
 #include <vector>
+#include <ctime>
 
 using std::cerr;
 using std::endl;
@@ -116,7 +117,8 @@ int main(int argc, char **argv) {
 
     filters.push_back(new TrimHistoryFilter(maxHistoryLength));
     filters.push_back(
-            new SmoothFilter(maxDeviation, maxDeviants, minLength));
+            new SmoothFilter(maxDeviation, maxDeviants, minLength,
+                    maxLength));
 
     int horizon;
     int deadZone;

@@ -13,16 +13,18 @@
 using namespace std;
 
 SmoothFilter::SmoothFilter(const double& maxDeviation,
-        const double& deviantThreshold, const double &minLength) :
-        _maxDeviation(maxDeviation), _deviantThreshold(deviantThreshold), _minLength(
-                minLength) {
-    // TODO Auto-generated constructor stub
+        const double& deviantThreshold, const double &minLength,
+        const double &maxLength) :
+        _maxDeviation(maxDeviation), _deviantThreshold(
+                deviantThreshold), _minLength(minLength), _maxLength(
+                maxLength) {
 
 }
 
 SmoothFilter::SmoothFilter(const SmoothFilter &toCopy) :
         _maxDeviation(toCopy._maxDeviation), _deviantThreshold(
-                toCopy._deviantThreshold), _minLength(toCopy._minLength) {
+                toCopy._deviantThreshold), _minLength(
+                toCopy._minLength), _maxLength(toCopy._maxLength) {
 
 }
 
@@ -58,8 +60,11 @@ std::vector<std::list<cv::Point2f> > SmoothFilter::filterFeatures(
 //			cerr<<"in "<<acos((b*b+c*c-a*a)/(2*b*c))/CV_PI;
 
             if (a > _minLength && b > _minLength
-                    && _maxDeviation
-                            < acos((b * b + c * c - a * a) / (2 * b * c))) {
+                    && (_maxDeviation
+                            < acos(
+                                    (b * b + c * c - a * a)
+                                            / (2 * b * c))
+                            || _maxLength < a + b)) {
                 toKill[i] = true;
                 ++counter;
 //				std::cerr<<"to kill "<<counter<<" "<<i<<std::endl;
@@ -70,14 +75,14 @@ std::vector<std::list<cv::Point2f> > SmoothFilter::filterFeatures(
         }
     }
 
-    if (_deviantThreshold >= counter) {
-        for (int j = 0; j < toKill.size(); ++j) {
+    if (_deviantThreshold >= counter/(double)features.size()) {
+        for (unsigned int j = 0; j < toKill.size(); ++j) {
             if (toKill[j]) {
-               // cerr << "bug in " << j << endl;
+                // cerr << "bug in " << j << endl;
                 result.erase(result.begin() + j);
                 toKill.erase(toKill.begin() + j);
                 --j;
-              //  cerr << "bug out" << endl;
+                //  cerr << "bug out" << endl;
             }
         }
     }

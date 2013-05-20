@@ -646,7 +646,7 @@ int main(int argc, char **argv) {
     namedWindow("trHistHo", CV_WINDOW_NORMAL);
     namedWindow("roHist", CV_WINDOW_NORMAL);
 
-    SmoothFilter filter(CV_PI / 16, 10,5);
+    SmoothFilter filter(CV_PI / 16, 10,5,30);
     ImageEdgeFilter edgeFilter(perspTrans, newGround.size(), 60);
     do {
         //perspTrans.at<double>(Point(2, 2)) = height;

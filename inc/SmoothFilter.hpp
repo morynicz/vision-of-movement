@@ -14,9 +14,10 @@ class SmoothFilter: public virtual FeatureFilter {
         double _maxDeviation;
         double _deviantThreshold;
         double _minLength;
+        double _maxLength;
     public:
         SmoothFilter(const double &maxDeviation, const double &maxDeviants,
-                const double &minLength);
+                const double &minLength,const double &maxLength);
         SmoothFilter(const SmoothFilter &toCopy);
         virtual ~SmoothFilter();
         virtual FeatureFilter *constructCopy() const;
