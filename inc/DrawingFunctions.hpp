@@ -24,7 +24,7 @@ void drawFeatureHistory(cv::Mat &newImage,
         const int &radius);
 
 void drawFeatureHistory(cv::Mat &newImage,
-        const std::list<cv::Point2f> &featureHistory,
+        const std::vector<std::list<cv::Point2f> > &featureHistory,
         const cv::Mat &transformMatrix, const int &radius);
 
 void drawFeaturesUpperAndLower(cv::Mat &image,
