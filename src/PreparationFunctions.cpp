@@ -64,7 +64,9 @@ void calibrateParameters(Catcher &capture,
                 __func__, __FILE__, __LINE__);
         throw ex;
     }
-
+    cv::destroyWindow("ground");
+    cv::destroyWindow("far");
+    cv::destroyWindow("main");
 }
 
 std::vector<cv::Point2f> getChessboardCorners(Catcher &capture,
@@ -118,6 +120,10 @@ std::vector<cv::Point2f> getChessboardCorners(Catcher &capture,
             corners, found);
     cv::imshow("main", undistorted);
     //cv::waitKey(0);
+
+    cv::destroyWindow("ground");
+    cv::destroyWindow("main");
+
     return corners;
 }
 template<class T>
