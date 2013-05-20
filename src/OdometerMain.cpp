@@ -19,6 +19,9 @@
 #include "opencv2/highgui/highgui.hpp"
 #include "opencv2/calib3d/calib3d.hpp"
 
+#include <boost/program_options.hpp>
+#include <boost/date_time.hpp>
+
 #include <string>
 #include <vector>
 #include <ctime>
@@ -200,6 +203,16 @@ int main(int argc, char **argv) {
             currentPosition = currentPosition + displacement;
             positions.push_front(currentPosition);
 
+            //setting up timestamps
+            boost::posix_time::ptime pTime =
+                    boost::posix_time::microsec_clock::universal_time();
+            boost::posix_time::time_duration duration(
+                    pTime.time_of_day());
+            boost::gregorian::date date = pTime.date();
+
+            std::cout << currentPosition << " " << date.year() << ":"
+                    << date.month() << ":" << date.day() << ":"
+                    << duration << std::endl;
             if (verbosity > 0) {
                 map = drawTraveledRoute(positions);
                 cv::imshow("map", map);
