@@ -38,11 +38,12 @@ std::vector<std::list<cv::Point2f> > SmoothFilter::filterFeatures(
     std::vector<bool> toKill(features.size());
     std::vector<std::list<cv::Point2f> > result(features);
     int counter = 0;
-    for (int i = 0; i < toKill.size(); ++i) {
+    for (unsigned int i = 0; i < toKill.size(); ++i) {
         if (3 > features[i].size()) {
             toKill[i] = false;
         } else {
-            std::list<cv::Point2f>::const_iterator it = features[i].begin();
+            std::list<cv::Point2f>::const_iterator it =
+                    features[i].begin();
 //			cerr<<"pre"<<endl;
             cv::Point2f first = *it;
             cv::Point2f second = *(++it);
