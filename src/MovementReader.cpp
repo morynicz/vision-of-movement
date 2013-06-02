@@ -6,7 +6,6 @@
  */
 
 #include "MovementReader.hpp"
-#include <iostream>
 MovementReader::MovementReader(const FeatureTracker &tracker,
         const FeatureExtractor &extractor,
         const std::list<FeatureFilter*> &filters,
@@ -15,7 +14,6 @@ MovementReader::MovementReader(const FeatureTracker &tracker,
         _trackedFeatures(trackedFeatures), _tracker(
                 tracker.constructCopy()), _extractor(
                 extractor.constructCopy()), _maxFeatures(maxFeatures) {
-    std::cerr<<filters.size()<<std::endl;
     for (std::list<FeatureFilter*>::const_iterator it =
             filters.begin(); it != filters.end(); ++it) {
         _filters.push_back((*it)->constructCopy());
