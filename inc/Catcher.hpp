@@ -18,7 +18,7 @@ static const int CATCH_CANNOT_OPEN_FILE = -2;
 ///\brief Class providing ability to catch the most recent frame from 
 /// video stream 
 
-class Catcher {
+class Catcher: public cv::VideoCapture{
         cv::Mat _fr; ///< Most recent frame
         boost::mutex *_mut;
 
@@ -47,10 +47,14 @@ class Catcher {
                 double get(const int &propId);
                 ///\brief Method for setting cv::VideoCapture properties
                 bool set(const int &propId, const double &value);
+                ///\brief Method checks if cv::VideoCapture is opened
+                bool isOpened();
         };
         Camera _cam; ///< Object providing the most recent frame
         boost::thread *_thr;
 
+        bool retrieve(cv::Mat& image, int channel=0){return false;};
+        bool grab(){return false;}
     public:
         ///\brief Constructor initialising pointer fields
         Catcher();
@@ -59,16 +63,14 @@ class Catcher {
         ///\brief Constructor for stream from a video file
         Catcher(const std::string &name);
         ///\brief initialization method for streams from a device
-        void init(const int &nr);
+        bool open(const int &nr);
         ///\brief initialization method for streams from a file
-        void init(const std::string &name);
+        bool open(const std::string &name);
         ///\brief Destructor removing mutex and thread objects
         ~Catcher();
         ///\brief Method for retrieving the most recent frame
-        void catchFrame(cv::Mat& frame);
-        void operator>>(cv::Mat &frame) {
-            catchFrame(frame);
-        }
+        bool read(cv::Mat& frame);
+        virtual Catcher& operator>>(cv::Mat &frame);
         ///\brief Method for acquiring cv::VideoCapture properties
         double get(const int &propId);
         ///\brief Method for setting cv::VideoCapture properties

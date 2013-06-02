@@ -18,7 +18,7 @@
 
 #include <iostream>
 
-void calibrateParameters(Catcher &capture,
+void calibrateParameters(cv::VideoCapture &capture,
         std::vector<cv::Mat> rectifyMaps, int &horizon, int &deadZone,
         const cv::Size &imageSize) {
     cv::Mat newIn;
@@ -38,6 +38,9 @@ void calibrateParameters(Catcher &capture,
             imageSize.height);
     cv::createTrackbar("dead zone", "trackbars", &deadZone,
             imageSize.height / 2);
+    cv::Mat resizing;
+    std::cerr << imageSize.width << " " << imageSize.height
+            << std::endl;
     do {
         capture >> newIn;
         cv::remap(newIn, undistorted, rectifyMaps[0], rectifyMaps[1],
@@ -69,7 +72,63 @@ void calibrateParameters(Catcher &capture,
     cv::destroyWindow("main");
 }
 
-std::vector<cv::Point2f> getChessboardCorners(Catcher &capture,
+void calibrateParametersSingleImage(cv::VideoCapture &capture,
+        std::vector<cv::Mat> rectifyMaps, int &horizon, int &deadZone,
+        const cv::Size &imageSize) {
+    cv::Mat newIn;
+    cv::Mat undistorted;
+    cv::Mat far;
+    cv::Mat ground;
+    char control = ' ';
+    cv::Rect lowerRoi;
+    cv::Rect upperRoi;
+
+    cv::namedWindow("ground", CV_WINDOW_NORMAL);
+    cv::namedWindow("far", CV_WINDOW_NORMAL);
+    cv::namedWindow("main", CV_WINDOW_NORMAL);
+    cv::namedWindow("trackbars", CV_WINDOW_NORMAL);
+
+    cv::createTrackbar("horizon", "trackbars", &horizon,
+            imageSize.height);
+    cv::createTrackbar("dead zone", "trackbars", &deadZone,
+            imageSize.height / 2);
+    cv::Mat resizing;
+    capture >> newIn;
+    cv::resize(newIn, resizing, imageSize);
+    cv::remap(resizing, undistorted, rectifyMaps[0], rectifyMaps[1],
+            cv::INTER_LINEAR);
+    do {
+        cv::Mat copy = undistorted.clone();
+
+        lowerRoi = cv::Rect(cv::Point2f(0, horizon + deadZone),
+                cv::Size(undistorted.cols,
+                        undistorted.rows - horizon - deadZone));
+        upperRoi = cv::Rect(cv::Point2f(0, 0),
+                cv::Size(undistorted.cols, horizon - deadZone));
+        ground = copy(lowerRoi);
+        far = copy(upperRoi);
+        drawDeadZoneHorizon(copy, horizon, deadZone);
+        cv::line(copy, cv::Point(400, 0), cv::Point(400, 600),
+                CV_RGB(255,0,0), 1, 8, 0);
+        imshow("ground", ground);
+        imshow("far", far);
+        imshow("main", copy);
+
+        control = cv::waitKey(0);
+    } while ('s' != control && 'q' != control);
+
+    if ('q' == control) {
+        cv::Exception ex(USER_TRIGGERED_EXIT, "user commanded exit",
+                __func__, __FILE__, __LINE__);
+        throw ex;
+    }
+    cv::destroyWindow("ground");
+    cv::destroyWindow("far");
+    cv::destroyWindow("main");
+}
+
+std::vector<cv::Point2f> getChessboardCorners(
+        cv::VideoCapture &capture,
         const std::vector<cv::Mat> &rectificationMaps,
         const int &horizon, const int &deadZone,
         const cv::Size &boardSize, const cv::Size &imageSize,
@@ -87,9 +146,11 @@ std::vector<cv::Point2f> getChessboardCorners(Catcher &capture,
     std::vector<cv::Point2f> corners;
     cv::namedWindow("ground", CV_WINDOW_NORMAL);
     char control = ' ';
+    cv::Mat resizing;
     do {
         capture >> newIn;
-        cv::remap(newIn, undistorted, rectificationMaps[0],
+        cv::resize(newIn, resizing, imageSize);
+        cv::remap(resizing, undistorted, rectificationMaps[0],
                 rectificationMaps[1], cv::INTER_LINEAR);
         cv::cvtColor(undistorted, greyNewIn, CV_RGB2GRAY);
         ground = greyNewIn(lowerRoi);
@@ -126,6 +187,68 @@ std::vector<cv::Point2f> getChessboardCorners(Catcher &capture,
 
     return corners;
 }
+
+std::vector<cv::Point2f> getChessboardCornersFileStream(
+        cv::VideoCapture &capture,
+        const std::vector<cv::Mat> &rectificationMaps,
+        const int &horizon, const int &deadZone,
+        const cv::Size &boardSize, const cv::Size &imageSize,
+        const cv::Size &winSize, const cv::Size &zeroZone,
+        const cv::TermCriteria &termCriteria) {
+    cv::Mat newIn;
+    cv::Mat undistorted;
+    cv::Mat greyNewIn;
+    cv::Mat ground;
+
+    cv::Rect lowerRoi(cv::Point2f(0, horizon + deadZone),
+            cv::Size(imageSize.width,
+                    imageSize.height - horizon - deadZone));
+    bool found = false;
+    std::vector<cv::Point2f> corners;
+    cv::namedWindow("ground", CV_WINDOW_NORMAL);
+    char control = ' ';
+    cv::Mat resizing;
+    do {
+        capture >> newIn;
+        cv::resize(newIn, resizing, imageSize);
+        cv::remap(resizing, undistorted, rectificationMaps[0],
+                rectificationMaps[1], cv::INTER_LINEAR);
+        cv::cvtColor(undistorted, greyNewIn, CV_RGB2GRAY);
+        ground = greyNewIn(lowerRoi);
+        found = cv::findChessboardCorners(ground, boardSize, corners,
+                CV_CALIB_CB_FAST_CHECK | CV_CALIB_CB_ADAPTIVE_THRESH
+                        | CV_CALIB_CB_NORMALIZE_IMAGE);
+        if (corners.size() > 0) {
+            drawChessboardCorners(undistorted(lowerRoi), boardSize,
+                    corners, found);
+            drawChessboardCorners(ground, boardSize, corners, found);
+            std::cerr << corners.size() << std::endl;
+        }
+        drawDeadZoneHorizon(undistorted, horizon, deadZone);
+        imshow("ground", ground);
+        imshow("main", undistorted);
+        control = cv::waitKey(1);
+    } while (!found && 'q' != control);
+
+    if ('q' == control) {
+        cv::Exception ex(USER_TRIGGERED_EXIT, "user requested exit",
+                __func__, __FILE__, __LINE__);
+        throw ex;
+    }
+    cv::cornerSubPix(ground, corners, winSize, zeroZone,
+            termCriteria);
+    cv::imwrite("chessboard.jpeg", undistorted);
+    cv::drawChessboardCorners(undistorted(lowerRoi), boardSize,
+            corners, found);
+    cv::imshow("main", undistorted);
+    //cv::waitKey(0);
+
+    cv::destroyWindow("ground");
+    cv::destroyWindow("main");
+
+    return corners;
+}
+
 template<class T>
 cv::Mat_<T> matrixFromPoint(cv::Point3_<T> pt) {
     return (cv::Mat_<T>(3, 1) << pt.x, pt.y, pt.z);
@@ -234,6 +357,7 @@ void getHomographyRtMatrixAndRotationCenter(
 //        std::cerr << "gamma rad: " << gamma << std::endl;
         gamma *= 180 / CV_PI;
         cv::Mat rMatN = cv::getRotationMatrix2D(objPts[0], -gamma, 1);
+        cv::Mat rMatP = cv::getRotationMatrix2D(objPts[0], gamma, 1);
 
         cv::Mat homN;
 

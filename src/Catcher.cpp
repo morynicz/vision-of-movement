@@ -86,6 +86,16 @@ bool Catcher::Camera::set(const int &propId, const double &value) {
     return _cam.set(propId, value);
 }
 
+/// Method checking if underlying cv::VideoCapture is opened
+/// \retval true if capture is opened
+/// \retval false if it is not
+bool Catcher::Camera::isOpened() {
+    _mut->lock();
+    bool result = _cam.isOpened();
+    _mut->unlock();
+    return result;
+}
+
 /// Initializes mut and thr pointers
 Catcher::Catcher() :
         _mut(NULL), _thr(NULL) {
@@ -108,7 +118,7 @@ Catcher::Catcher(const std::string &name) :
 /// Method initializing the object for drawing video stream from a device 
 /// with given number
 /// \param nr - number of device from which the video stream will be drawn
-void Catcher::init(const int &nr) {
+bool Catcher::open(const int &nr) {
     if (_thr != NULL) {
         _thr->interrupt();
         _thr->join();
@@ -120,13 +130,18 @@ void Catcher::init(const int &nr) {
     }
     _mut = new boost::mutex;
     _cam = Camera(nr, &_fr, _mut);
-    _thr = new boost::thread(boost::ref(_cam));
+    if (_cam.isOpened()) {
+        _thr = new boost::thread(boost::ref(_cam));
+        return true;
+    } else {
+        return false;
+    }
 }
 
 /// Method initializing the object for drawing video stream from a video
 /// file
 /// \param name - name of file from which the video stream will be read
-void Catcher::init(const std::string& name) {
+bool Catcher::open(const std::string& name) {
     if (_thr != NULL) {
         _thr->interrupt();
         _thr->join();
@@ -138,7 +153,12 @@ void Catcher::init(const std::string& name) {
     }
     _mut = new boost::mutex;
     _cam = Camera(name, &_fr, _mut);
-    _thr = new boost::thread(boost::ref(_cam));
+    if (_cam.isOpened()) {
+        _thr = new boost::thread(boost::ref(_cam));
+        return true;
+    } else {
+        return false;
+    }
 }
 
 /// Destructor, ensures that all threads and dynamic objects will be
@@ -158,10 +178,11 @@ Catcher::~Catcher() {
 /// outside
 /// \param frame - object in which the deep copy of most recent frame will
 /// be placed
-void Catcher::catchFrame(cv::Mat& frame) {
+bool Catcher::read(cv::Mat& frame) {
     _mut->lock();
     frame = _fr.clone();
     _mut->unlock();
+    return !frame.empty(); //need to correct this
 }
 
 ///Method for acquiring cv::VideoCapture properties
@@ -184,4 +205,9 @@ bool Catcher::set(const int &propId, const double &value) {
     result = _cam.set(propId, value);
     _mut->unlock();
     return result;
+}
+
+Catcher& Catcher::operator>>(cv::Mat &frame) {
+    read(frame);
+    return *this;
 }
