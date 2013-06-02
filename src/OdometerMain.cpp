@@ -30,7 +30,6 @@
 using std::cerr;
 using std::endl;
 
-
 int main(int argc, char **argv) {
 
     ShiThomasiParameters shiThomasi;
@@ -188,7 +187,7 @@ int main(int argc, char **argv) {
         boost::posix_time::ptime milenium(
                 boost::gregorian::date(2000, 1, 1));
 
-        for(int i=0;i<5;++i){//a couple of dry cycles to warm up
+        for (int i = 0; i < 5; ++i) { //a couple of dry cycles to warm up
             cv::Point3f displacement;
             capture >> input;
             if (input.empty()) {
