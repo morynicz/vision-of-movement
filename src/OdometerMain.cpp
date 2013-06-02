@@ -185,6 +185,8 @@ int main(int argc, char **argv) {
         }
         std::vector<std::list<cv::Point2f> > featuresRot;
         std::vector<std::list<cv::Point2f> > featuresGround;
+        boost::posix_time::ptime milenium(
+                boost::gregorian::date(2000, 1, 1));
 
         for(int i=0;i<5;++i){//a couple of dry cycles to warm up
             cv::Point3f displacement;
@@ -214,15 +216,24 @@ int main(int argc, char **argv) {
             positions.push_front(currentPosition);
 
             //setting up timestamps
+//            boost::posix_time::ptime pTime =
+//                    boost::posix_time::microsec_clock::universal_time();
+//            boost::posix_time::time_duration duration(
+//                    pTime.time_of_day());
+//            boost::gregorian::date date = pTime.date();
+//
+//            std::cout << currentPosition << " " << date.year() << ":"
+//                    << date.month() << ":" << date.day() << ":"
+//                    << duration << std::endl;
             boost::posix_time::ptime pTime =
                     boost::posix_time::microsec_clock::universal_time();
             boost::posix_time::time_duration duration(
-                    pTime.time_of_day());
-            boost::gregorian::date date = pTime.date();
+                    pTime - milenium);
+            long long miliseconds = duration.total_milliseconds();
+            timestamps.push_front(miliseconds);
+            std::cout << currentPosition << " " << miliseconds
+                    << std::endl;
 
-            std::cout << currentPosition << " " << date.year() << ":"
-                    << date.month() << ":" << date.day() << ":"
-                    << duration << std::endl;
             if (verbosity > 0) {
                 map = drawTraveledRoute(positions);
                 cv::imshow("map", map);
@@ -243,6 +254,7 @@ int main(int argc, char **argv) {
             control = cv::waitKey(1);
         } while ('q' != control);
         cv::waitKey(0);
+        std::list<long long>::iterator iTime = timestamps.begin();
         std::ofstream out;
         if (!matlabFilename.empty()) {
             out.open(matlabFilename.c_str(), std::ofstream::out);
@@ -256,12 +268,12 @@ int main(int argc, char **argv) {
         }
         for (std::list<cv::Point3f>::iterator iPos =
                 positions.begin();
-                positions.end() != iPos;
-                ++iPos) {
+                positions.end() != iPos && timestamps.end() != iTime;
+                ++iPos, ++iTime) {
             std::cerr << *iPos << std::endl;
             if (!matlabFilename.empty()) {
                 out << iPos->x << "," << iPos->y << "," << iPos->z
-                        << std::endl;
+                        << "," << *iTime << std::endl;
             }
         }
         out << "];" << std::endl;
