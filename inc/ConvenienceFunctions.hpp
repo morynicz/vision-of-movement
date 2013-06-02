@@ -9,6 +9,8 @@
 #define CONVENIENCEFUNCTIONS_HPP_
 
 #include "opencv2/core/core.hpp"
+#include "Catcher.hpp"
+#include "PreparationFunctions.hpp"
 
 bool horizontalPoint3Compare(cv::Point3f p1, cv::Point3f p2);
 
@@ -49,5 +51,17 @@ void pointMeanAndVariance(const std::vector<cv::Point3d> &input,
         cv::Point3d &mean, cv::Point3d &varinace);
 
 cv::Point3d pointMedian(const std::vector<cv::Point3d> &input);
+
+void checkPnPMethodStats(Catcher &capture,
+        const std::vector<cv::Mat> &rectifyMaps, const int &horizon,
+        const int &deadZone, const cv::Size &boardSize,
+        const cv::Size &imageSize, const cv::Size &winSize,
+        const cv::Size &zeroZone, const cv::TermCriteria &termCrit,
+        const double &squareSize, const cv::Mat &cameraMatrix,
+        const cv::Mat & distortionCoefficients,
+        const double &chessboardHeight, const int & iterations,
+        cv::Point3d & mean, cv::Point3d & variance,
+        cv::Point3d & median, cv::Point3d &stdDev);
+
 
 #endif /* CONVENIENCEFUNCTIONS_HPP_ */

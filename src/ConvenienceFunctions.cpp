@@ -121,3 +121,35 @@ cv::Point3d pointMedian(const std::vector<cv::Point3d> &input) {
     return result;
 }
 
+void checkPnPMethodStats(Catcher &capture,
+        const std::vector<cv::Mat> &rectifyMaps, const int &horizon,
+        const int &deadZone, const cv::Size &boardSize,
+        const cv::Size &imageSize, const cv::Size &winSize,
+        const cv::Size &zeroZone, const cv::TermCriteria &termCrit,
+        const double &squareSize, const cv::Mat &cameraMatrix,
+        const cv::Mat & distortionCoefficients,
+        const double &chessboardHeight, const int & iterations,
+        cv::Point3d & mean, cv::Point3d & variance,
+        cv::Point3d & median, cv::Point3d &stdDev) {
+    std::vector<cv::Point3d> coords(iterations);
+    cv::Mat homography, rtMatrix;
+    cv::Point2d rotationCenter;
+    for (unsigned int i = 0; i < coords.size(); ++i) {
+        std::vector<cv::Point2f> corners = getChessboardCorners(
+                capture, rectifyMaps, horizon, deadZone, boardSize,
+                imageSize, winSize, zeroZone, termCrit);
+        getHomographyRtMatrixAndRotationCenter(corners, imageSize,
+                boardSize, squareSize, horizon, deadZone,
+                cameraMatrix, distortionCoefficients,
+                chessboardHeight, homography, rotationCenter,
+                rtMatrix);
+
+        coords[i] = cv::Point3d(rtMatrix.at<double>(0, 3),
+                rtMatrix.at<double>(1, 3), rtMatrix.at<double>(2, 3));
+    }
+    pointMeanAndVariance(coords, mean, variance);
+    stdDev = cv::Point3d(sqrt(variance.x), sqrt(variance.y),
+            sqrt(variance.y));
+
+}
+
