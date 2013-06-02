@@ -373,6 +373,10 @@ void getHomographyRtMatrixAndRotationCenter(
         rotationCenter = rPointsN[0]
                 + cv::Point2f(rtMatrix.at<double>(1, 3),
                         rtMatrix.at<double>(0, 3));
+        std::vector<cv::Point2f> rcenter, rrcenter;
+        rcenter.push_back(rotationCenter);
+        cv::transform(rcenter, rrcenter, rMatN);
+        rotationCenter = rrcenter.front();
         // +cv::Point2f( 0,-407);
 
         homography = homN.clone();
