@@ -20,6 +20,15 @@ class ChessboardParameters {
         cv::TermCriteria termCrit;
 };
 
+class CameraSpatialParameters{
+    public:
+        cv::Mat homography;
+        cv::Mat rtMatrix;
+        cv::Point2d rotationCenter;
+        int horizon;
+        int deadZone;
+};
+
 void calibrateParameters(cv::VideoCapture &capture,
         std::vector<cv::Mat> rectifyMaps, int &horizon, int &deadZone,
         const cv::Size &imageSize);
@@ -34,6 +43,8 @@ std::vector<cv::Point2f> getChessboardCorners(cv::VideoCapture &capture,
         const cv::Size &boardSize, const cv::Size &imageSize,
         const cv::Size &winSize, const cv::Size &zeroZone,
         const cv::TermCriteria &termCriteria);
+
+
 
 void getHomographyRtMatrixAndRotationCenter(
         std::vector<cv::Point2f> corners, const cv::Size& imageSize,
@@ -60,4 +71,11 @@ cv::FileStorage &operator<<(cv::FileStorage &fs,
 
 void operator>>(const cv::FileNode &node,
         ChessboardParameters &chessboard);
+
+cv::FileStorage &operator<<(cv::FileStorage &fs,
+        const CameraSpatialParameters &camera);
+
+void operator>>(const cv::FileNode &node,
+        CameraSpatialParameters &camera);
+
 #endif

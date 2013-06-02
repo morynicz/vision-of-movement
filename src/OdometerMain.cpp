@@ -13,6 +13,7 @@
 #include "DrawingFunctions.hpp"
 #include "Catcher.hpp"
 #include "CvTypesIo.hpp"
+#include "CommandlineParameters.hpp"
 
 #include "opencv2/core/core.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
@@ -29,34 +30,13 @@
 using std::cerr;
 using std::endl;
 
-void saveParameters(const std::string &fileName,
-        ShiThomasiParameters &shiThomasi,
-        LucasKanadeParameters &lucasKanade,
-        ChessboardParameters &chessboard, int &upperMaxFeatures,
-        int &lowerMaxFeatures, int &maxHistoryLength,
-        double &upperMargin, double &lowerMargin);
-
-void readParameters(const std::string &fileName,
-        ShiThomasiParameters &shiThomasi,
-        LucasKanadeParameters &lucasKanade,
-        ChessboardParameters &chessboard, int &upperMaxFeatures,
-        int &lowerMaxFeatures, int &maxHistoryLength,
-        double &upperMargin, double &lowerMargin);
-
-void readParametersCommandLine(const int &argc, char **argv,
-        ShiThomasiParameters &shiThomasi,
-        LucasKanadeParameters &lucasKanade,
-        ChessboardParameters &chessboard, int &upperMaxFeatures,
-        int &lowerMaxFeatures, int &maxHistoryLength,
-        double &upperMargin, double &lowerMargin,
-        int &captureDeviceNumber, int &verbosity,
-        std::string &cameraParametersFilename);
 
 int main(int argc, char **argv) {
 
     ShiThomasiParameters shiThomasi;
     LucasKanadeParameters lucasKanade;
     ChessboardParameters chessboard;
+    CameraSpatialParameters spatial;
 
     shiThomasi.qualityLevel = 0.005;
     shiThomasi.minDistance = 30;
@@ -94,19 +74,21 @@ int main(int argc, char **argv) {
     double upperMargin = 30;
     double lowerMargin = 30;
 
+    spatial.horizon = -1;
+    spatial.deadZone = -1;
+
     int captureDeviceNumber = 1;
     int verbosity = 0;
     std::string cameraParametersFilename;
+    std::string matlabFilename, cameraSpatialFilename;
 
     readParametersCommandLine(argc, argv, shiThomasi, lucasKanade,
-            chessboard, maxFeaturesUpper, maxFeaturesLower,
+            chessboard, spatial, maxFeaturesUpper, maxFeaturesLower,
             maxHistoryLength, upperMargin, lowerMargin,
-            captureDeviceNumber, verbosity, cameraParametersFilename);
-
-    cv::Mat homography;
+            captureDeviceNumber, verbosity, cameraParametersFilename,
+            matlabFilename, cameraSpatialFilename);
 
     Catcher capture(captureDeviceNumber);
-
     ShiThomasFeatureExtractor extractor(shiThomasi.qualityLevel,
             shiThomasi.minDistance, shiThomasi.blockSize,
             shiThomasi.winSize, shiThomasi.zeroZone,
@@ -123,20 +105,14 @@ int main(int argc, char **argv) {
             new SmoothFilter(maxDeviation, maxDeviants, minLength,
                     maxLength));
 
-    int horizon;
-    int deadZone;
-
     std::vector<cv::Mat> rectifyMaps;
     cv::Size imageSize;
 
     std::list<cv::Point3f> positions;
-    cv::Point2d rotationCenter;
-    cv::Mat rtMatrix;
+    std::list<long long> timestamps;
     cv::Point3f currentPosition(0, 0, 0);
 
     positions.push_back(currentPosition);
-
-
     try {
         cv::Mat cameraMatrix, distortionCoefficients;
         getCameraParameters(cameraParametersFilename, rectifyMaps,
@@ -144,36 +120,57 @@ int main(int argc, char **argv) {
 
         capture.set(CV_CAP_PROP_FRAME_WIDTH, imageSize.width);
         capture.set(CV_CAP_PROP_FRAME_HEIGHT, imageSize.height);
-        horizon = imageSize.height / 2;
-        deadZone = 0;
-        calibrateParameters(capture, rectifyMaps, horizon, deadZone,
-                imageSize);
 
-        std::vector<cv::Point2f> corners = getChessboardCorners(
-                capture, rectifyMaps, horizon, deadZone,
-                chessboard.size, imageSize, chessboard.winSize,
-                chessboard.zeroZone, chessboard.termCrit);
-        cerr << "got corners" << endl;
-        getHomographyRtMatrixAndRotationCenter(corners, imageSize,
-                chessboard.size, chessboard.squareSize, horizon,
-                deadZone, cameraMatrix, distortionCoefficients,
-                chessboard.height, homography, rotationCenter,
-                rtMatrix);
-        std::cerr << "rt: " << rtMatrix << std::endl;
+        if (0 >= spatial.horizon || 0 > spatial.deadZone) {
+            spatial.horizon = imageSize.height / 2;
+            spatial.deadZone = 0;
+            calibrateParameters(capture, rectifyMaps, spatial.horizon,
+                    spatial.deadZone, imageSize);
+
+            std::vector<cv::Point2f> corners = getChessboardCorners(
+                    capture, rectifyMaps, spatial.horizon,
+                    spatial.deadZone, chessboard.size, imageSize,
+                    chessboard.winSize, chessboard.zeroZone,
+                    chessboard.termCrit);
+            cerr << "got corners" << endl;
+            getHomographyRtMatrixAndRotationCenter(corners, imageSize,
+                    chessboard.size, chessboard.squareSize,
+                    spatial.horizon, spatial.deadZone, cameraMatrix,
+                    distortionCoefficients, chessboard.height,
+                    spatial.homography, spatial.rotationCenter,
+                    spatial.rtMatrix);
+            if (!cameraSpatialFilename.empty()) {
+                cv::FileStorage fs(cameraSpatialFilename,
+                        cv::FileStorage::WRITE);
+                if (!fs.isOpened()) {
+                    cv::Exception ex(-1, "Could not open FileStorage",
+                            __func__, __FILE__, __LINE__);
+                    throw ex;
+                }
+                fs << "cameraSpatialParameters" << spatial;
+                fs.release();
+            }
+
+        }
+//        std::cerr << "rt: " << spatial.rtMatrix << std::endl;
+//        std::cerr << "rot center: " << spatial.rotationCenter
+//                << std::endl;
         cerr << "got transform and rt" << endl;
         TangentRotationReader rotationReader(tracker, extractor,
                 filters, maxFeaturesUpper,
                 cameraMatrix.at<double>(0, 0),
-                cv::Size(imageSize.width, horizon - deadZone),
-                upperMargin);
-        BirdsEyeTranslationReader transReader(homography, extractor,
-                tracker, maxFeaturesLower, filters, rotationCenter,
                 cv::Size(imageSize.width,
-                        imageSize.height - horizon - deadZone),
-                lowerMargin);
+                        spatial.horizon - spatial.deadZone),
+                upperMargin);
+        BirdsEyeTranslationReader transReader(spatial.homography,
+                extractor, tracker, maxFeaturesLower, filters,
+                spatial.rotationCenter,
+                cv::Size(imageSize.width,
+                        imageSize.height - spatial.horizon
+                                - spatial.deadZone), lowerMargin);
         cerr << "got birdy" << endl;
-        VisualOdometer odo(rotationReader, transReader, horizon,
-                deadZone);
+        VisualOdometer odo(rotationReader, transReader,
+                spatial.horizon, spatial.deadZone);
         cerr << "got VO" << endl;
         char control = ' ';
         cv::Mat input;
@@ -188,6 +185,19 @@ int main(int argc, char **argv) {
         }
         std::vector<std::list<cv::Point2f> > featuresRot;
         std::vector<std::list<cv::Point2f> > featuresGround;
+
+        for(int i=0;i<5;++i){//a couple of dry cycles to warm up
+            cv::Point3f displacement;
+            capture >> input;
+            if (input.empty()) {
+                continue;
+            }
+
+            cv::remap(input, undistorted, rectifyMaps[0],
+                    rectifyMaps[1], cv::INTER_LINEAR);
+            cv::cvtColor(undistorted, grey, CV_RGB2GRAY);
+            displacement = odo.calculateDisplacement(grey);
+        }
 
         do {
             cv::Point3f displacement;
@@ -222,8 +232,8 @@ int main(int argc, char **argv) {
                 featuresGround = odo.getTranslationFeatures();
 
                 drawFeaturesUpperAndLower(undistorted, featuresRot,
-                        cv::Mat(), featuresGround, homography,
-                        horizon, deadZone);
+                        cv::Mat(), featuresGround, spatial.homography,
+                        spatial.horizon, spatial.deadZone);
                 cv::line(input, cv::Point(imageSize.width / 2, 0),
                         cv::Point(imageSize.width / 2,
                                 imageSize.height), CV_RGB(255,0,0), 1,
@@ -233,10 +243,29 @@ int main(int argc, char **argv) {
             control = cv::waitKey(1);
         } while ('q' != control);
         cv::waitKey(0);
-        for (std::list<cv::Point3f>::iterator it = positions.begin();
-                positions.end() != it; ++it) {
-            std::cerr << *it << std::endl;
+        std::ofstream out;
+        if (!matlabFilename.empty()) {
+            out.open(matlabFilename.c_str(), std::ofstream::out);
+            if (!out.is_open()) {
+                std::cerr << "WARNING: could not open file "
+                        << matlabFilename << " for write"
+                        << std::endl;
+            } else {
+                out << "t=[" << std::endl;
+            }
         }
+        for (std::list<cv::Point3f>::iterator iPos =
+                positions.begin();
+                positions.end() != iPos;
+                ++iPos) {
+            std::cerr << *iPos << std::endl;
+            if (!matlabFilename.empty()) {
+                out << iPos->x << "," << iPos->y << "," << iPos->z
+                        << std::endl;
+            }
+        }
+        out << "];" << std::endl;
+        out.close();
     } catch (cv::Exception &ex) {
         if (USER_TRIGGERED_EXIT == ex.code) {
             return 0;
@@ -247,120 +276,4 @@ int main(int argc, char **argv) {
         }
     }
     return 0;
-}
-void readParameters(const std::string &fileName,
-        ShiThomasiParameters &shiThomasi,
-        LucasKanadeParameters &lucasKanade,
-        ChessboardParameters &chessboard, int &upperMaxFeatures,
-        int &lowerMaxFeatures, int &maxHistoryLength,
-        double &upperMargin, double &lowerMargin) {
-
-    cv::FileStorage fs(fileName, cv::FileStorage::READ);
-    if (!fs.isOpened()) {
-        cv::Exception ex(-1, "Could not open FileStorage", __func__,
-                __FILE__, __LINE__);
-        throw ex;
-    }
-
-    fs["ShiThomasiParameters"] >> shiThomasi;
-    fs["LucasKanadeParameters"] >> lucasKanade;
-    fs["ChessboardParameters"] >> chessboard;
-
-    fs["upperMaxFeatures"] >> upperMaxFeatures;
-    fs["lowerMaxFeatures"] >> lowerMaxFeatures;
-    fs["maxHistoryLength"] >> maxHistoryLength;
-    fs["upperMargin"] >> upperMargin;
-    fs["lowerMargin"] >> lowerMargin;
-    fs.release();
-}
-
-void saveParameters(const std::string &fileName,
-        ShiThomasiParameters &shiThomasi,
-        LucasKanadeParameters &lucasKanade,
-        ChessboardParameters &chessboard, int &upperMaxFeatures,
-        int &lowerMaxFeatures, int &maxHistoryLength,
-        double &upperMargin, double &lowerMargin) {
-    cv::FileStorage fs(fileName, cv::FileStorage::WRITE);
-    if (!fs.isOpened()) {
-        cv::Exception ex(-1, "Could not open FileStorage", __func__,
-                __FILE__, __LINE__);
-        throw ex;
-    }
-    fs << "ShiThomasiParameters" << shiThomasi;
-    fs << "LucasKanadeParameters" << lucasKanade;
-    fs << "ChessboardParameters" << chessboard;
-
-    fs << "upperMaxFeatures" << upperMaxFeatures;
-    fs << "lowerMaxFeatures" << lowerMaxFeatures;
-    fs << "maxHistoryLength" << maxHistoryLength;
-    fs << "upperMargin" << upperMargin;
-    fs << "lowerMargin" << lowerMargin;
-    fs.release();
-}
-
-void readParametersCommandLine(const int &argc, char **argv,
-        ShiThomasiParameters &shiThomasi,
-        LucasKanadeParameters &lucasKanade,
-        ChessboardParameters &chessboard, int &upperMaxFeatures,
-        int &lowerMaxFeatures, int &maxHistoryLength,
-        double &upperMargin, double &lowerMargin,
-        int &captureDeviceNumber, int &verbosity,
-        std::string &cameraParametersFilename) {
-
-    boost::program_options::options_description desc(
-            "Allowed options");
-    boost::program_options::variables_map vm;
-    desc.add_options()("help,h", "this help message")("device,d",
-            boost::program_options::value<int>(&captureDeviceNumber)->default_value(
-                    0), "input device number")("parameters_file,p",
-            boost::program_options::value<std::string>(),
-            "the file containing program parameters")(
-            "camera_parameters,c",
-            boost::program_options::value<std::string>(),
-            "camera parameters file")("verbosity,v",
-            boost::program_options::value<int>(&verbosity)->default_value(
-                    0),
-            "Program verbosity level.\n 0 - default, returns current "
-                    "position to standard output\n 1 - instead of numeric values,"
-                    " draws map. Values are printed at end of execution\n 2 - "
-                    "shows video output from camera and tracked features");
-
-    boost::program_options::store(
-            boost::program_options::parse_command_line(argc, argv,
-                    desc), vm);
-    boost::program_options::notify(vm);
-
-    if (vm.count("help")) {
-        std::cout << desc << std::endl;
-    }
-
-    if (vm.count("verbosity")) {
-        if (vm["verbosity"].as<int>() > 2
-                || vm["verbosity"].as<int>() < 0) {
-            cv::Exception ex(-1, "Bad verbosity value", __func__,
-                    __FILE__, __LINE__);
-            throw ex;
-        }
-    }
-
-    if (vm.count("parameters_file")) {
-        readParameters(vm["parameters_file"].as<std::string>(),
-                shiThomasi, lucasKanade, chessboard, upperMaxFeatures,
-                lowerMaxFeatures, maxHistoryLength, upperMargin,
-                lowerMargin);
-    } else {
-        cv::Exception ex(-2, "Program parameters file not supplied",
-                __func__, __FILE__, __LINE__);
-        throw ex;
-    }
-
-    if (vm.count("camera_parameters")) {
-        cameraParametersFilename = vm["camera_parameters"].as<
-                std::string>();
-    } else {
-        cv::Exception ex(-2, "camera parameters file not supplied",
-                __func__, __FILE__, __LINE__);
-        throw ex;
-    }
-
 }

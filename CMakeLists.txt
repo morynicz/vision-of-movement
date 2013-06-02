@@ -8,7 +8,7 @@ set(CMAKE_BUILD_TYPE Debug)
 
 include_directories(inc)
 
-add_executable(visualOdometer src/OdometerMain.cpp src/VisualOdometer.cpp src/PreparationFunctions.cpp src/DrawingFunctions.cpp src/ConvenienceFunctions.cpp src/CvTypesIo.cpp) 
+add_executable(visualOdometer src/OdometerMain.cpp src/VisualOdometer.cpp src/PreparationFunctions.cpp src/DrawingFunctions.cpp src/ConvenienceFunctions.cpp src/CvTypesIo.cpp src/CommandlineParameters.cpp) 
 add_library(featureFilters src/FeatureFilter.cpp src/SmoothFilter.cpp src/ImageEdgeFilter.cpp src/TrimHistoryFilter.cpp src/ConvenienceFunctions.cpp)
 add_library(translationReaders src/TranslationReader.cpp src/BirdsEyeTranslationReader.cpp)
 add_library(rotationReaders src/RotationReader.cpp src/TangentRotationReader.cpp)

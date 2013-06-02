@@ -449,7 +449,6 @@ void getCameraParameters(const std::string &fileName,
 
 }
 
-
 cv::FileStorage &operator<<(cv::FileStorage &fs,
         const ChessboardParameters &chessboard) {
     fs << "{" << "winSize" << chessboard.winSize << "zeroZone"
@@ -470,3 +469,23 @@ void operator>>(const cv::FileNode &node,
     node["termCrit"] >> chessboard.termCrit;
 
 }
+
+cv::FileStorage &operator<<(cv::FileStorage &fs,
+        const CameraSpatialParameters &camera){
+    fs<<"{"<<"homography"<<camera.homography
+            <<"rtMatrix"<<camera.rtMatrix
+            <<"rotationCenter"<<camera.rotationCenter
+            <<"horizon"<<camera.horizon
+            <<"deadZone"<<camera.deadZone<<"}";
+    return fs;
+}
+
+void operator>>(const cv::FileNode &node,
+        CameraSpatialParameters &camera){
+    node["rtMatrix"]>>camera.rtMatrix;
+    node["homography"]>>camera.homography;
+    node["rotationCenter"]>>camera.rotationCenter;
+    node["horizon"]>>camera.horizon;
+    node["deadZone"]>>camera.deadZone;
+}
+
