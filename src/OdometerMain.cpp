@@ -250,6 +250,13 @@ int main(int argc, char **argv) {
                                 imageSize.height), CV_RGB(255,0,0), 1,
                         8, 0);
                 cv::imshow("main", undistorted);
+                if ('p' == control) {
+                    std::string fileName;
+                    std::stringstream buff;
+                    buff << "screen" << timestamps.front() << ".png";
+                    buff >> fileName;
+                    cv::imwrite(fileName, undistorted);
+                }
             }
             control = cv::waitKey(1);
         } while ('q' != control);
