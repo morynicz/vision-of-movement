@@ -35,15 +35,17 @@ class VisualOdometer {
         TranslationReader *_translationReader;
         int _horizonHeight;
         int _deadZoneWidth;
-        cv::RNG _rng;
     public:
         VisualOdometer(const RotationReader &rotationReader,
                 const TranslationReader &translationReader,
                 const int &horizonHeight, const int &deadZoneWidth);
+        VisualOdometer(const VisualOdometer &toCopy);
         cv::Point3f calculateDisplacement(const cv::Mat &newFrame);
         std::vector<std::list<cv::Point2f> > getRotationFeatures() const;
         std::vector<std::list<cv::Point2f> > getTranslationFeatures() const;
         virtual ~VisualOdometer();
+        VisualOdometer &operator=(
+                const VisualOdometer &toCopy);
 };
 
 #endif /* VISUALODOMETER_H_ */
