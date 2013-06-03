@@ -69,12 +69,12 @@ class Catcher: public cv::VideoCapture{
         ///\brief Destructor removing mutex and thread objects
         ~Catcher();
         ///\brief Method for retrieving the most recent frame
-        bool read(cv::Mat& frame);
+        virtual bool read(cv::Mat& frame);
         virtual Catcher& operator>>(cv::Mat &frame);
         ///\brief Method for acquiring cv::VideoCapture properties
-        double get(const int &propId);
+        virtual double get(const int &propId);
         ///\brief Method for setting cv::VideoCapture properties
-        bool set(const int &propId, const double &value);
+        virtual bool set(const int &propId, const double &value);
 };
 
 #endif

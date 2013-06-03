@@ -3,7 +3,7 @@
 ///\author Michał Orynicz
 #include "Catcher.hpp"
 
-#include <iostream>
+//#include <iostream>
 
 using namespace std;
 
