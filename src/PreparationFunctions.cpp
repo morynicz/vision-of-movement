@@ -93,7 +93,10 @@ void calibrateParametersSingleImage(cv::VideoCapture &capture,
     cv::createTrackbar("dead zone", "trackbars", &deadZone,
             imageSize.height / 2);
     cv::Mat resizing;
-    capture >> newIn;
+    do {
+        capture >> newIn;
+        cv::waitKey(1);
+    } while (newIn.empty());
     cv::resize(newIn, resizing, imageSize);
     cv::remap(resizing, undistorted, rectifyMaps[0], rectifyMaps[1],
             cv::INTER_LINEAR);
@@ -149,23 +152,28 @@ std::vector<cv::Point2f> getChessboardCorners(
     cv::Mat resizing;
     do {
         capture >> newIn;
-        cv::resize(newIn, resizing, imageSize);
-        cv::remap(resizing, undistorted, rectificationMaps[0],
-                rectificationMaps[1], cv::INTER_LINEAR);
-        cv::cvtColor(undistorted, greyNewIn, CV_RGB2GRAY);
-        ground = greyNewIn(lowerRoi);
-        found = cv::findChessboardCorners(ground, boardSize, corners,
-                CV_CALIB_CB_FAST_CHECK | CV_CALIB_CB_ADAPTIVE_THRESH
-                        | CV_CALIB_CB_NORMALIZE_IMAGE);
-        if (corners.size() > 0) {
-            drawChessboardCorners(undistorted(lowerRoi), boardSize,
-                    corners, found);
-            drawChessboardCorners(ground, boardSize, corners, found);
-            std::cerr << corners.size() << std::endl;
+        if (!newIn.empty()) {
+            cv::resize(newIn, resizing, imageSize);
+            cv::remap(resizing, undistorted, rectificationMaps[0],
+                    rectificationMaps[1], cv::INTER_LINEAR);
+            cv::cvtColor(undistorted, greyNewIn, CV_RGB2GRAY);
+            ground = greyNewIn(lowerRoi);
+            found = cv::findChessboardCorners(ground, boardSize,
+                    corners,
+                    CV_CALIB_CB_FAST_CHECK
+                            | CV_CALIB_CB_ADAPTIVE_THRESH
+                            | CV_CALIB_CB_NORMALIZE_IMAGE);
+            if (corners.size() > 0) {
+                drawChessboardCorners(undistorted(lowerRoi),
+                        boardSize, corners, found);
+                drawChessboardCorners(ground, boardSize, corners,
+                        found);
+                std::cerr << corners.size() << std::endl;
+            }
+            drawDeadZoneHorizon(undistorted, horizon, deadZone);
+            imshow("ground", ground);
+            imshow("main", undistorted);
         }
-        drawDeadZoneHorizon(undistorted, horizon, deadZone);
-        imshow("ground", ground);
-        imshow("main", undistorted);
         control = cv::waitKey(1);
     } while (!found && 'q' != control);
 
