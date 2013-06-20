@@ -135,7 +135,7 @@ int main(int argc, char **argv) {
         std::vector<std::list<cv::Point2f> > featuresRot;
         std::vector<std::list<cv::Point2f> > featuresGround;
         boost::posix_time::ptime milenium(
-                boost::gregorian::date(2000, 1, 1));
+                boost::gregorian::date(1970, 1, 1));
 
         for (int i = 0; i < 5; ++i) { //a couple of dry cycles to warm up
             cv::Point3f displacement;
