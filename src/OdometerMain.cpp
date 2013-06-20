@@ -103,8 +103,8 @@ int main(int argc, char **argv) {
             captureDeviceNumber, verbosity, cameraParametersFilename,
             matlabFilename, cameraSpatialFilename);
 
-    Catcher capture(captureDeviceNumber);
-
+    Catcher capture;
+    capture.open(captureDeviceNumber);
     cv::Mat cameraMatrix, distortionCoefficients;
     getCameraParameters(cameraParametersFilename, rectifyMaps,
             cameraMatrix, distortionCoefficients, imageSize);
