@@ -37,7 +37,7 @@ cv::Mat drawTraveledRoute(const std::list<cv::Point3f> &route) {
 //			extremes[3].y - extremes[2].y);
 
     cv::Size mapSize(1000, 1000);
-
+int scale=0.1;
     if (0 == mapSize.width) {
         mapSize.width = 1;
     }
@@ -52,10 +52,10 @@ cv::Mat drawTraveledRoute(const std::list<cv::Point3f> &route) {
     result = cv::Mat(mapSize, CV_8UC3, cv::Scalar::all(255));
 
     for (++end; route.end() != end; ++end, ++bg) {
-        cv::Point2f start(bg->x + mapSize.width / 2,
-                bg->y + center.x);
-        cv::Point2f finish(end->x + mapSize.width / 2,
-                end->y + center.y);
+        cv::Point2f start((bg->x + mapSize.width / 2)*scale,
+                (bg->y + center.y)*scale);
+        cv::Point2f finish((end->x + mapSize.width / 2)*scale,
+                (end->y + center.y)*scale);
         //	std::cerr<<start<<" "<<finish<<std::endl;
         cv::line(result,
 //				cv::Point2f(bg->x - extremes[0].x, bg->y - extremes[2].y),
