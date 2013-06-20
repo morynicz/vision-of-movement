@@ -479,21 +479,20 @@ void operator>>(const cv::FileNode &node,
 }
 
 cv::FileStorage &operator<<(cv::FileStorage &fs,
-        const CameraSpatialParameters &camera){
-    fs<<"{"<<"homography"<<camera.homography
-            <<"rtMatrix"<<camera.rtMatrix
-            <<"rotationCenter"<<camera.rotationCenter
-            <<"horizon"<<camera.horizon
-            <<"deadZone"<<camera.deadZone<<"}";
+        const CameraSpatialParameters &camera) {
+    fs << "{" << "homography" << camera.homography << "rtMatrix"
+            << camera.rtMatrix << "rotationCenter"
+            << camera.rotationCenter << "horizon" << camera.horizon
+            << "deadZone" << camera.deadZone << "}";
     return fs;
 }
 
 void operator>>(const cv::FileNode &node,
-        CameraSpatialParameters &camera){
-    node["rtMatrix"]>>camera.rtMatrix;
-    node["homography"]>>camera.homography;
-    node["rotationCenter"]>>camera.rotationCenter;
-    node["horizon"]>>camera.horizon;
-    node["deadZone"]>>camera.deadZone;
+        CameraSpatialParameters &camera) {
+    node["rtMatrix"] >> camera.rtMatrix;
+    node["homography"] >> camera.homography;
+    node["rotationCenter"] >> camera.rotationCenter;
+    node["horizon"] >> camera.horizon;
+    node["deadZone"] >> camera.deadZone;
 }
 
