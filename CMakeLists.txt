@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 2.8)
-project(VisualOdometry)
+project(VisualOdometry C CXX)
 add_definitions(-Wall -pedantic -g)
 find_package(OpenCV REQUIRED)
-find_package(Boost REQUIRED thread program_options)
-
+find_package(Boost REQUIRED thread program_options chrono filesystem)
+find_package(Threads)
 set(CMAKE_BUILD_TYPE Debug)
 
 include_directories(inc)
@@ -30,3 +30,7 @@ target_link_libraries(cameraCalibration opencv_core opencv_highgui opencv_calib3
 
 add_executable(odometryTests src/visualOdometry.cpp)
 target_link_libraries(odometryTests opencv_core opencv_highgui opencv_imgproc opencv_calib3d opencv_video featureFilters)
+
+add_executable(serial src/serialPortTest.cpp)
+target_link_libraries(serial ${CMAKE_THREAD_LIBS_INIT})
+set_target_properties(serial PROPERTIES COMPILE_FLAGS -std=c++11)
