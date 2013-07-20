@@ -5,7 +5,7 @@
 #include "TangentRotationReader.hpp"
 #include "SmoothFilter.hpp"
 #include "TrimHistoryFilter.hpp"
-#include "LucasCandaePyramidTracker.hpp"
+#include "LucasKanadePyramidTracker.hpp"
 #include "ShiThomasiFeatureExtractor.hpp"
 #include "PreparationFunctions.hpp"
 #include "ConvenienceFunctions.hpp"
@@ -285,7 +285,7 @@ VisualOdometer getVisualOdometer(cv::VideoCapture &capture,
             shiThomasi.minDistance, shiThomasi.blockSize,
             shiThomasi.winSize, shiThomasi.zeroZone,
             shiThomasi.termCrit);
-    LucasCandaePyramidTracker tracker(lucasKanade.winSize,
+    LucasKanadePyramidTracker tracker(lucasKanade.winSize,
             lucasKanade.maxLevel, lucasKanade.flags,
             lucasKanade.termCrit, lucasKanade.minEigenvalueThresh,
             lucasKanade.maxErrorValue);

@@ -5,7 +5,7 @@
  *      Author: link
  */
 
-#include "LucasCandaePyramidTracker.hpp"
+#include "LucasKanadePyramidTracker.hpp"
 #include "opencv2/video/tracking.hpp"
 
 const cv::TermCriteria DEFAULT_TERM_CRITERIA = cv::TermCriteria(
@@ -16,19 +16,19 @@ const unsigned int DEFAULT_FLAGS = 0;
 const double DEFAULT_MIN_EIGENVALUE_THRESHOLD = 1e-4;
 const double DEFAULT_MAX_ERROR_THRESHOLD = 500;
 
-LucasCandaePyramidTracker::LucasCandaePyramidTracker() :
+LucasKanadePyramidTracker::LucasKanadePyramidTracker() :
 		_windowSize(DEFAULT_WINDOW_SIZE), _maxLevel(DEFAULT_MAX_LEVEL), _flags(
 				DEFAULT_FLAGS), _minEigenvalueThreshold(
 				DEFAULT_MIN_EIGENVALUE_THRESHOLD), _maxErrorThreshold(
 				DEFAULT_MAX_ERROR_THRESHOLD), _termCrit(DEFAULT_TERM_CRITERIA) {
 }
 
-LucasCandaePyramidTracker::~LucasCandaePyramidTracker() {
+LucasKanadePyramidTracker::~LucasKanadePyramidTracker() {
 	// TODO Auto-generated destructor stub
 }
 
-LucasCandaePyramidTracker::LucasCandaePyramidTracker(
-		const LucasCandaePyramidTracker &toCopy) :
+LucasKanadePyramidTracker::LucasKanadePyramidTracker(
+		const LucasKanadePyramidTracker &toCopy) :
 		_windowSize(toCopy._windowSize), _maxLevel(toCopy._maxLevel), _flags(
 				toCopy._flags), _minEigenvalueThreshold(
 				toCopy._minEigenvalueThreshold), _maxErrorThreshold(
@@ -36,7 +36,7 @@ LucasCandaePyramidTracker::LucasCandaePyramidTracker(
 
 }
 
-LucasCandaePyramidTracker::LucasCandaePyramidTracker(const cv::Size &windowSize,
+LucasKanadePyramidTracker::LucasKanadePyramidTracker(const cv::Size &windowSize,
 		const unsigned int &maxLevel, const int &flags,
 		const cv::TermCriteria &terminationCriteria,
 		const double &minEigenvalueThreshold, const double &maxErrorValue) :
@@ -46,11 +46,11 @@ LucasCandaePyramidTracker::LucasCandaePyramidTracker(const cv::Size &windowSize,
 
 }
 
-FeatureTracker *LucasCandaePyramidTracker::constructCopy() const {
-	return new LucasCandaePyramidTracker(*this);
+FeatureTracker *LucasKanadePyramidTracker::constructCopy() const {
+	return new LucasKanadePyramidTracker(*this);
 }
 
-void LucasCandaePyramidTracker::trackFeatures(const cv::Mat &oldInput,
+void LucasKanadePyramidTracker::trackFeatures(const cv::Mat &oldInput,
 		const cv::Mat &newInput,
 		std::vector<std::list<cv::Point2f> > &trackedFeatures) {
 	std::vector<uchar> status;

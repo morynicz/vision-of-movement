@@ -9,7 +9,7 @@
 #define COMMANDLINEPARAMETERS_HPP_
 
 #include "ShiThomasiFeatureExtractor.hpp"
-#include "LucasCandaePyramidTracker.hpp"
+#include "LucasKanadePyramidTracker.hpp"
 #include "PreparationFunctions.hpp"
 
 #include <string>

@@ -14,7 +14,7 @@ add_library(translationReaders src/TranslationReader.cpp src/BirdsEyeTranslation
 add_library(rotationReaders src/RotationReader.cpp src/TangentRotationReader.cpp)
 add_library(movementReaders src/MovementReader.cpp)
 add_library(featureExtractors src/FeatureExtractor.cpp src/ShiThomasiFeatureExtractor.cpp src/ConvenienceFunctions.cpp)
-add_library(featureTrackers src/FeatureTracker.cpp src/LucasCandaePyramidTracker.cpp)
+add_library(featureTrackers src/FeatureTracker.cpp src/LucasKanadePyramidTracker.cpp)
 add_library(capturing src/Catcher.cpp)
 
 target_link_libraries(featureExtractors opencv_core opencv_video opencv_imgproc)
