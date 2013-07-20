@@ -13,7 +13,7 @@ add_library(featureFilters src/FeatureFilter.cpp src/SmoothFilter.cpp src/ImageE
 add_library(translationReaders src/TranslationReader.cpp src/BirdsEyeTranslationReader.cpp)
 add_library(rotationReaders src/RotationReader.cpp src/TangentRotationReader.cpp)
 add_library(movementReaders src/MovementReader.cpp)
-add_library(featureExtractors src/FeatureExtractor.cpp src/ShiThomasFeatureExtractor.cpp src/ConvenienceFunctions.cpp)
+add_library(featureExtractors src/FeatureExtractor.cpp src/ShiThomasiFeatureExtractor.cpp src/ConvenienceFunctions.cpp)
 add_library(featureTrackers src/FeatureTracker.cpp src/LucasCandaePyramidTracker.cpp)
 add_library(capturing src/Catcher.cpp)
 

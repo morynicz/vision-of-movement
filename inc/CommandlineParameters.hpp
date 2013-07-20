@@ -8,7 +8,7 @@
 #ifndef COMMANDLINEPARAMETERS_HPP_
 #define COMMANDLINEPARAMETERS_HPP_
 
-#include "ShiThomasFeatureExtractor.hpp"
+#include "ShiThomasiFeatureExtractor.hpp"
 #include "LucasCandaePyramidTracker.hpp"
 #include "PreparationFunctions.hpp"
 

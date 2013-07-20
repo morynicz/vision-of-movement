@@ -6,7 +6,7 @@
 #include "SmoothFilter.hpp"
 #include "TrimHistoryFilter.hpp"
 #include "LucasCandaePyramidTracker.hpp"
-#include "ShiThomasFeatureExtractor.hpp"
+#include "ShiThomasiFeatureExtractor.hpp"
 #include "PreparationFunctions.hpp"
 #include "ConvenienceFunctions.hpp"
 #include "ErrorCodes.hpp"
@@ -281,7 +281,7 @@ VisualOdometer getVisualOdometer(cv::VideoCapture &capture,
                 std::vector<cv::Mat> rectifyMaps, int &horizon,
                 int &deadZone, const cv::Size &imageSize)) {
 
-    ShiThomasFeatureExtractor extractor(shiThomasi.qualityLevel,
+    ShiThomasiFeatureExtractor extractor(shiThomasi.qualityLevel,
             shiThomasi.minDistance, shiThomasi.blockSize,
             shiThomasi.winSize, shiThomasi.zeroZone,
             shiThomasi.termCrit);
