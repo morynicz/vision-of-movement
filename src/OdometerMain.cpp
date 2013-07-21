@@ -143,6 +143,9 @@ int main(int argc, char **argv) {
         if (verbosity > 0) {
             cv::namedWindow("map", CV_WINDOW_KEEPRATIO);
         }
+        if (0 == verbosity) {
+            cv::namedWindow("kill switch", CV_WINDOW_NORMAL);
+        }
         std::vector<std::list<cv::Point2f> > featuresRot;
         std::vector<std::list<cv::Point2f> > featuresGround;
         boost::posix_time::ptime milenium(
