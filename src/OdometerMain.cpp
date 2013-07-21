@@ -33,7 +33,7 @@ using std::endl;
 void processInput(const cv::Mat &input,
         const std::vector<cv::Mat> &rectifyMaps,
         std::list<cv::Point3f> &positions, VisualOdometer &odo,
-        std::list<long long> &timestamps,
+        std::list<long long int> &timestamps,
         const boost::posix_time::ptime &milenium,
         const int &verbosity, const CameraSpatialParameters &spatial,
         const cv::Size &imageSize, const std::string &mainWindowName,
@@ -60,7 +60,7 @@ VisualOdometer getVisualOdometer(cv::VideoCapture &capture,
                 int &deadZone, const cv::Size &imageSize));
 
 void printTrajectory(const std::string &matlabFilename,
-        const std::list<long long> &timestamps,
+        const std::list<long long int> &timestamps,
         const std::list<cv::Point3f> &positions);
 
 int main(int argc, char **argv) {
@@ -94,7 +94,7 @@ int main(int argc, char **argv) {
     cv::Size imageSize;
 
     std::list<cv::Point3f> positions;
-    std::list<long long> timestamps;
+    std::list<long long int> timestamps;
     cv::Point3f currentPosition(0, 0, 0);
 
     readParametersCommandLine(argc, argv, shiThomasi, lucasKanade,
@@ -186,9 +186,10 @@ int main(int argc, char **argv) {
 }
 
 void printTrajectory(const std::string &matlabFilename,
-        const std::list<long long> &timestamps,
+        const std::list<long long int> &timestamps,
         const std::list<cv::Point3f> &positions) {
-    std::list<long long>::const_iterator iTime = timestamps.begin();
+    std::list<long long int>::const_iterator iTime =
+            timestamps.begin();
     std::ofstream out;
     if (!matlabFilename.empty()) {
         out.open(matlabFilename.c_str(), std::ofstream::out);
@@ -216,7 +217,7 @@ void printTrajectory(const std::string &matlabFilename,
 void processInput(const cv::Mat &input,
         const std::vector<cv::Mat> &rectifyMaps,
         std::list<cv::Point3f> &positions, VisualOdometer &odo,
-        std::list<long long> &timestamps,
+        std::list<long long int> &timestamps,
         const boost::posix_time::ptime &milenium,
         const int &verbosity, const CameraSpatialParameters &spatial,
         const cv::Size &imageSize, const std::string &mainWindowName,
