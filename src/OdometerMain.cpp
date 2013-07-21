@@ -96,22 +96,33 @@ int main(int argc, char **argv) {
     std::list<cv::Point3f> positions;
     std::list<long long int> timestamps;
     cv::Point3f currentPosition(0, 0, 0);
-
-    readParametersCommandLine(argc, argv, shiThomasi, lucasKanade,
-            chessboard, spatial, maxFeaturesUpper, maxFeaturesLower,
-            maxHistoryLength, upperMargin, lowerMargin,
-            captureDeviceNumber, verbosity, cameraParametersFilename,
-            matlabFilename, cameraSpatialFilename);
-
     Catcher capture;
-    capture.open(captureDeviceNumber);
     cv::Mat cameraMatrix, distortionCoefficients;
-    getCameraParameters(cameraParametersFilename, rectifyMaps,
-            cameraMatrix, distortionCoefficients, imageSize);
 
-    capture.set(CV_CAP_PROP_FRAME_WIDTH, imageSize.width);
-    capture.set(CV_CAP_PROP_FRAME_HEIGHT, imageSize.height);
+    try {
+        readParametersCommandLine(argc, argv, shiThomasi, lucasKanade,
+                chessboard, spatial, maxFeaturesUpper,
+                maxFeaturesLower, maxHistoryLength, upperMargin,
+                lowerMargin, captureDeviceNumber, verbosity,
+                cameraParametersFilename, matlabFilename,
+                cameraSpatialFilename);
 
+        capture.open(captureDeviceNumber);
+        getCameraParameters(cameraParametersFilename, rectifyMaps,
+                cameraMatrix, distortionCoefficients, imageSize);
+
+        capture.set(CV_CAP_PROP_FRAME_WIDTH, imageSize.width);
+        capture.set(CV_CAP_PROP_FRAME_HEIGHT, imageSize.height);
+        std::cerr << imageSize << std::endl;
+    } catch (cv::Exception &ex) {
+        if (USER_TRIGGERED_EXIT == ex.code) {
+            return 0;
+        } else {
+            std::cerr << "EXCEPTION!!!!!!!!!!!" << std::endl
+                    << ex.what() << std::endl;
+            return 1;
+        }
+    }
     try {
         VisualOdometer odo = getVisualOdometer(capture, shiThomasi,
                 lucasKanade, chessboard, spatial,
@@ -227,38 +238,62 @@ void processInput(const cv::Mat &input,
     cv::Point3d currentPosition = positions.front();
     cv::Point3d displacement;
     cv::Mat map;
-    cv::remap(input, undistorted, rectifyMaps[0], rectifyMaps[1],
-            cv::INTER_LINEAR);
-    cv::cvtColor(undistorted, grey, CV_RGB2GRAY);
-    displacement = odo.calculateDisplacement(grey);
-    currentPosition = currentPosition + displacement;
-    positions.push_front(currentPosition);
+    try {
+        cv::remap(input, undistorted, rectifyMaps[0], rectifyMaps[1],
+                cv::INTER_LINEAR);
+        cv::cvtColor(undistorted, grey, CV_RGB2GRAY);
+        displacement = odo.calculateDisplacement(grey);
+        cv::Point3d globalDisplacement(
+                displacement.x
+                        * cos(currentPosition.z + displacement.z)
+                        + displacement.y
+                                * sin(
+                                        currentPosition.z
+                                                + displacement.z),
+                displacement.x
+                        * sin(currentPosition.z + displacement.z)
+                        + displacement.y
+                                * cos(
+                                        currentPosition.z
+                                                + displacement.z),
+                displacement.z);
+        currentPosition = currentPosition + globalDisplacement;
+        positions.push_back(currentPosition);
 
-    boost::posix_time::ptime pTime =
-            boost::posix_time::microsec_clock::universal_time();
-    boost::posix_time::time_duration duration(pTime - milenium);
-    long long miliseconds = duration.total_milliseconds();
-    timestamps.push_front(miliseconds);
-    std::cout << currentPosition << " " << miliseconds << std::endl;
+        boost::posix_time::ptime pTime =
+                boost::posix_time::microsec_clock::universal_time();
+        boost::posix_time::time_duration duration(pTime - milenium);
+        long long int miliseconds = duration.total_milliseconds();
+        timestamps.push_back(miliseconds);
 
-    if (verbosity > 0) {
-        map = drawTraveledRoute(positions);
-        cv::imshow(mapWindowName, map);
-    }
-    if (verbosity > 1) {
-        std::vector<std::list<cv::Point2f> > featuresRot =
-                odo.getRotationFeatures();
-        std::vector<std::list<cv::Point2f> > featuresGround =
-                odo.getTranslationFeatures();
+        if (verbosity > 0) {
+            map = drawTraveledRoute(positions);
+            cv::imshow(mapWindowName, map);
+        }
+        if (verbosity > 1) {
+            std::vector<std::list<cv::Point2f> > featuresRot =
+                    odo.getRotationFeatures();
+            std::vector<std::list<cv::Point2f> > featuresGround =
+                    odo.getTranslationFeatures();
 
-        drawFeaturesUpperAndLower(undistorted, featuresRot, cv::Mat(),
-                featuresGround, spatial.homography, spatial.horizon,
-                spatial.deadZone);
-        cv::line(undistorted, cv::Point(imageSize.width / 2, 0),
-                cv::Point(imageSize.width / 2, imageSize.height),
-                CV_RGB(255,0,0), 1, 8, 0);
-        cv::imshow(mainWindowName, undistorted);
+            drawFeaturesUpperAndLower(undistorted, featuresRot,
+                    cv::Mat(), featuresGround, spatial.homography,
+                    spatial.horizon, spatial.deadZone);
+            cv::line(undistorted, cv::Point(imageSize.width / 2, 0),
+                    cv::Point(imageSize.width / 2, imageSize.height),
+                    CV_RGB(255,0,0), 1, 8, 0);
+            drawDeadZoneHorizon(undistorted, spatial.horizon,
+                    spatial.deadZone);
+            cv::imshow(mainWindowName, undistorted);
 
+        }
+    } catch (const cv::Exception &ex) {
+
+        std::cerr << "EXCEPTION!!!!!!!!!!!" << std::endl << ex.what()
+                << std::endl;
+        cv::Exception newEx(ex.code, "Exception caught", __func__,
+                __FILE__, __LINE__);
+        throw newEx;
     }
 }
 
@@ -291,66 +326,72 @@ VisualOdometer getVisualOdometer(cv::VideoCapture &capture,
             lucasKanade.termCrit, lucasKanade.minEigenvalueThresh,
             lucasKanade.maxErrorValue);
 
-    std::list<FeatureFilter*> filters;
+    try {
+        std::list<FeatureFilter*> filters;
 
-    filters.push_back(new TrimHistoryFilter(maxHistoryLength));
-    filters.push_back(
-            new SmoothFilter(maxDeviation, maxDeviants, minLength,
-                    maxLength));
+        filters.push_back(new TrimHistoryFilter(maxHistoryLength));
+        filters.push_back(
+                new SmoothFilter(maxDeviation, maxDeviants, minLength,
+                        maxLength));
 
-    cv::Point3f currentPosition(0, 0, 0);
+        cv::Point3f currentPosition(0, 0, 0);
 
-    positions.push_back(currentPosition);
+        positions.push_back(currentPosition);
 
-    if (0 >= spatial.horizon || 0 > spatial.deadZone) {
-        spatial.horizon = imageSize.height / 2;
-        spatial.deadZone = 0;
-        parametersCalibration(capture, rectifyMaps, spatial.horizon,
-                spatial.deadZone, imageSize);
+        if (0 >= spatial.horizon || 0 > spatial.deadZone) {
+            spatial.horizon = imageSize.height / 2;
+            spatial.deadZone = 0;
+            parametersCalibration(capture, rectifyMaps,
+                    spatial.horizon, spatial.deadZone, imageSize);
 
-        std::vector<cv::Point2f> corners = getChessboardCorners(
-                capture, rectifyMaps, spatial.horizon,
-                spatial.deadZone, chessboard.size, imageSize,
-                chessboard.winSize, chessboard.zeroZone,
-                chessboard.termCrit);
-        cerr << "got corners" << endl;
-        getHomographyRtMatrixAndRotationCenter(corners, imageSize,
-                chessboard.size, chessboard.squareSize,
-                spatial.horizon, spatial.deadZone, cameraMatrix,
-                distortionCoefficients, chessboard.height,
-                spatial.homography, spatial.rotationCenter,
-                spatial.rtMatrix);
-        if (!cameraSpatialFilename.empty()) {
-            cv::FileStorage fs(cameraSpatialFilename,
-                    cv::FileStorage::WRITE);
-            if (!fs.isOpened()) {
-                cv::Exception ex(-1, "Could not open FileStorage",
-                        __func__, __FILE__, __LINE__);
-                throw ex;
+            std::vector<cv::Point2f> corners = getChessboardCorners(
+                    capture, rectifyMaps, spatial.horizon,
+                    spatial.deadZone, chessboard.size, imageSize,
+                    chessboard.winSize, chessboard.zeroZone,
+                    chessboard.termCrit);
+            cerr << "got corners" << endl;
+            getHomographyRtMatrixAndRotationCenter(corners, imageSize,
+                    chessboard.size, chessboard.squareSize,
+                    spatial.horizon, spatial.deadZone, cameraMatrix,
+                    distortionCoefficients, chessboard.height,
+                    spatial.homography, spatial.rotationCenter,
+                    spatial.rtMatrix);
+            if (!cameraSpatialFilename.empty()) {
+                cv::FileStorage fs(cameraSpatialFilename,
+                        cv::FileStorage::WRITE);
+                if (!fs.isOpened()) {
+                    cv::Exception ex(-1, "Could not open FileStorage",
+                            __func__, __FILE__, __LINE__);
+                    throw ex;
+                }
+                fs << "cameraSpatialParameters" << spatial;
+                fs.release();
             }
-            fs << "cameraSpatialParameters" << spatial;
-            fs.release();
-        }
 
+        }
+        TangentRotationReader rotationReader(tracker, extractor,
+                filters, maxFeaturesUpper,
+                cameraMatrix.at<double>(0, 0),
+                cv::Size(imageSize.width,
+                        spatial.horizon - spatial.deadZone),
+                upperMargin);
+        BirdsEyeTranslationReader transReader(spatial.homography,
+                extractor, tracker, maxFeaturesLower, filters,
+                spatial.rotationCenter,
+                cv::Size(imageSize.width,
+                        imageSize.height - spatial.horizon
+                                - spatial.deadZone), lowerMargin);
+        VisualOdometer odo(rotationReader, transReader,
+                spatial.horizon, spatial.deadZone);
+        return odo;
+    } catch (const cv::Exception &ex) {
+        if (USER_TRIGGERED_EXIT != ex.code) {
+            std::cerr << "EXCEPTION!!!!!!!!!!!" << std::endl
+                    << ex.what() << std::endl;
+        }
+        cv::Exception newEx(ex.code, "Exception caught", __func__,
+                __FILE__, __LINE__);
+        throw newEx;
     }
-//        std::cerr << "rt: " << spatial.rtMatrix << std::endl;
-//        std::cerr << "rot center: " << spatial.rotationCenter
-//                << std::endl;
-    cerr << "got transform and rt" << endl;
-    TangentRotationReader rotationReader(tracker, extractor, filters,
-            maxFeaturesUpper, cameraMatrix.at<double>(0, 0),
-            cv::Size(imageSize.width,
-                    spatial.horizon - spatial.deadZone), upperMargin);
-    BirdsEyeTranslationReader transReader(spatial.homography,
-            extractor, tracker, maxFeaturesLower, filters,
-            spatial.rotationCenter,
-            cv::Size(imageSize.width,
-                    imageSize.height - spatial.horizon
-                            - spatial.deadZone), lowerMargin);
-    cerr << "got birdy" << endl;
-    VisualOdometer odo(rotationReader, transReader, spatial.horizon,
-            spatial.deadZone);
-    cerr << "got VO" << endl;
-    return odo;
 
 }
