@@ -1,5 +1,5 @@
 /// \file
-/// \brief Header file for class Cather
+/// \brief Header file for class Catcher
 /// \author Michał Orynicz
 
 #include <boost/thread.hpp>
@@ -51,7 +51,7 @@ class Catcher: public cv::VideoCapture{
                 bool isOpened();
         };
         Camera _cam; ///< Object providing the most recent frame
-        boost::thread *_thr;
+        boost::thread *_thr; ///< thread receiving all the images from camera
 
         bool retrieve(cv::Mat& image, int channel=0){return false;};
         bool grab(){return false;}
@@ -70,6 +70,7 @@ class Catcher: public cv::VideoCapture{
         ~Catcher();
         ///\brief Method for retrieving the most recent frame
         virtual bool read(cv::Mat& frame);
+        ///\brief Method calls read method
         virtual Catcher& operator>>(cv::Mat &frame);
         ///\brief Method for acquiring cv::VideoCapture properties
         virtual double get(const int &propId);
