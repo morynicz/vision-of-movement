@@ -172,7 +172,7 @@ int main(int argc, char **argv) {
             }
             processInput(input, rectifyMaps, positions, odo,
                     timestamps, milenium, verbosity, spatial,
-                    imageSize,"main","map");
+                    imageSize, "main", "map");
 
             if (1 < verbosity && 'p' == control) {
                 std::string fileName;
@@ -218,7 +218,7 @@ void printTrajectory(const std::string &matlabFilename,
             positions.begin();
             positions.end() != iPos && timestamps.end() != iTime;
             ++iPos, ++iTime) {
-        std::cerr << *iPos << std::endl;
+        std::cerr << *iPos << " " << *iTime << std::endl;
         if (!matlabFilename.empty()) {
             out << iPos->x << "," << iPos->y << "," << iPos->z << ","
                     << *iTime << std::endl;
