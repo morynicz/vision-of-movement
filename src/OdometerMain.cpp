@@ -238,7 +238,7 @@ void processInput(const cv::Mat &input,
         const std::string &mapWindowName) {
     cv::Mat undistorted;
     cv::Mat grey;
-    cv::Point3d currentPosition = positions.front();
+    cv::Point3d currentPosition = positions.back();
     cv::Point3d displacement;
     cv::Mat map;
     try {

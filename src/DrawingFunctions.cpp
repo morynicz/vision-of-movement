@@ -64,7 +64,7 @@ int scale=0.1;
 
     }
 
-    cv::Point3f curr = route.front() + center;
+    cv::Point3f curr = route.back()*scale + center;
     cv::Point2f curr2d(curr.x, curr.y);
 //	std::cerr<<"curr "<<curr<<std::endl;
     std::vector<cv::Point2f> preTrans;
