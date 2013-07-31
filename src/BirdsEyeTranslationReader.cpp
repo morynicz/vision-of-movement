@@ -38,8 +38,7 @@ BirdsEyeTranslationReader::BirdsEyeTranslationReader(
 
 BirdsEyeTranslationReader::BirdsEyeTranslationReader(
         const BirdsEyeTranslationReader &toCopy) :
-        TranslationReader(toCopy), _translations(
-                toCopy._translations), _rotationCenter(
+        TranslationReader(toCopy), _rotationCenter(
                 toCopy._rotationCenter), _viewSize(toCopy._viewSize), _homography(
                 toCopy._homography) {
 }
