@@ -188,7 +188,6 @@ std::vector<cv::Point2f> getChessboardCorners(
     cv::drawChessboardCorners(undistorted(lowerRoi), boardSize,
             corners, found);
     cv::imshow("main", undistorted);
-    //cv::waitKey(0);
 
     cv::destroyWindow("ground");
     cv::destroyWindow("main");
@@ -249,7 +248,6 @@ std::vector<cv::Point2f> getChessboardCornersFileStream(
     cv::drawChessboardCorners(undistorted(lowerRoi), boardSize,
             corners, found);
     cv::imshow("main", undistorted);
-    //cv::waitKey(0);
 
     cv::destroyWindow("ground");
     cv::destroyWindow("main");
@@ -313,8 +311,6 @@ void getHomographyRtMatrixAndRotationCenter(
     imgPts[2] = corners[(boardSize.height - 1) * boardSize.width];
     imgPts[3] = corners[(boardSize.height) * boardSize.width - 1];
 
-    //homography = cv::getPerspectiveTransform(objPts, imgPts);
-
     cv::Mat rvec, tvec;
 //Creation of 3D chessboard model
     std::vector<cv::Point3d> mCorners;
@@ -331,8 +327,6 @@ void getHomographyRtMatrixAndRotationCenter(
     p3pcorn[2] = mCorners[(boardSize.height - 1) * boardSize.width];
     p3pcorn[3] = mCorners[(boardSize.height) * boardSize.width - 1];
 //Get rvec and tvec describing where the chessboards first corner lays in cameras coordinate system
-//    cv::solvePnP(mCorners, corners, cameraMatrix,
-//            distortionCoefficients, rvec, tvec, false, /*CV_ITERATIVE*/CV_P3P);
     cv::solvePnP(p3pcorn, imgPts, cameraMatrix,
             distortionCoefficients, rvec, tvec, false, /*CV_ITERATIVE*/
             CV_ITERATIVE);
@@ -341,28 +335,17 @@ void getHomographyRtMatrixAndRotationCenter(
     cv::Rodrigues(rvec, rot);
 
     rtMatrix = invRtTransformMatrix(rot, tvec);
-//    std::cerr << "cam-ch tvec: " <<std::endl<< tvec << std::endl;
-//    //printMatrix(tvec, true);
-//    std::cerr << "ch-cam rt mat: " <<std::endl<< rtMatrix << std::endl;
-//    //printMatrix(rtMatrix, true);
-//    std::cerr << "cam coords in ch "<<std::endl
-//            << cv::Point3d(rtMatrix.at<double>(0, 3),
-//                    rtMatrix.at<double>(1, 3),
-//                    rtMatrix.at<double>(2, 3)) << std::endl;
 
     {
         cv::Mat invT = getT(rtMatrix);
 
         cv::Mat z = rtMatrix(cv::Range(0, 3), cv::Range(2, 3));
-        //  std::cerr <<"z versor "<< z << std::endl << cv::Vec3d(z)<<<std::endl;
+
         z.at<double>(2) = 0;
         cv::Mat zN = z / norm(cv::Vec3d(z));
 
-        //std::cerr <<"z normalized "<< zN << std::endl;
-
         double gamma = atan2(zN.at<double>(1), zN.at<double>(0))
                 - atan2(0, 1);
-//        std::cerr << "gamma rad: " << gamma << std::endl;
         gamma *= 180 / CV_PI;
         cv::Mat rMatN = cv::getRotationMatrix2D(objPts[0], -gamma, 1);
         cv::Mat rMatP = cv::getRotationMatrix2D(objPts[0], gamma, 1);
@@ -373,10 +356,6 @@ void getHomographyRtMatrixAndRotationCenter(
         cv::transform(objPts, rPointsN, rMatN);
         homN = cv::getPerspectiveTransform(rPointsN, imgPts);
 
-//        std::cerr <<"gamma deg: "<< gamma << std::endl << "c: "
-//                << cv::Point2d(rtMatrix.at<double>(0, 3),
-//                        rtMatrix.at<double>(1, 3)) << std::endl;
-
 // VERY IMPORTANT: in bird's eye view, the x and y axes are swapped!
         rotationCenter = rPointsN[0]
                 + cv::Point2f(rtMatrix.at<double>(1, 3),
@@ -385,7 +364,6 @@ void getHomographyRtMatrixAndRotationCenter(
         rcenter.push_back(rotationCenter);
         cv::transform(rcenter, rrcenter, rMatN);
         rotationCenter = rrcenter.front();
-        // +cv::Point2f( 0,-407);
 
         homography = homN.clone();
 
