@@ -52,10 +52,10 @@ int scale=0.1;
     result = cv::Mat(mapSize, CV_8UC3, cv::Scalar::all(255));
 
     for (++end; route.end() != end; ++end, ++bg) {
-        cv::Point2f start((bg->x + mapSize.width / 2)*scale,
-                (bg->y + center.y)*scale);
-        cv::Point2f finish((end->x + mapSize.width / 2)*scale,
-                (end->y + center.y)*scale);
+        cv::Point2f start((bg->x) * scale + center.x,
+                (bg->y) * scale + center.y);
+        cv::Point2f finish((end->x) * scale + center.x,
+                (end->y) * scale + center.y);
         //	std::cerr<<start<<" "<<finish<<std::endl;
         cv::line(result,
 //				cv::Point2f(bg->x - extremes[0].x, bg->y - extremes[2].y),
@@ -78,7 +78,7 @@ int scale=0.1;
             cv::Point2f(-0.03 * mapSize.width, 0) + curr2d);
 
     cv::Mat rotMat = cv::getRotationMatrix2D(
-            cv::Point2f(curr.x, curr.y), curr.z * 180 / CV_PI, 1);
+            cv::Point2f(curr.x, curr.y), curr.z/scale * 180 / CV_PI, 1);
 
     cv::transform(preTrans, postTrans, rotMat);
     cv::Mat out;
