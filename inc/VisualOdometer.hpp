@@ -31,8 +31,8 @@
 #include <cmath>
 
 class VisualOdometer {
-        RotationReader *_rotationReader;
         TranslationReader *_translationReader;
+        RotationReader *_rotationReader;
         int _horizonHeight;
         int _deadZoneWidth;
     public:
