@@ -71,10 +71,11 @@ void Catcher::Camera::operator()() {
         }
     }
 }
-
-///Method for acquiring cv::VideoCapture properties
-///\param propId - property id. To get possible values, see
-///cv::VideoCapture::get documentation
+/**
+* Method for acquiring cv::VideoCapture properties
+* \param propId - property id. To get possible values, see
+* cv::VideoCapture::get documentation
+*/
 double Catcher::Camera::get(const int &propId) {
     return _cam.get(propId);
 }
@@ -198,7 +199,7 @@ double Catcher::get(const int &propId) {
 ///Method for setting cv::VideoCapture properties
 ///\param propId - property id. To get possible values, see
 ///cv::VideoCapture::set documentation
-///\param value - value to which property @propId will be set
+///\param value - value to which property propId will be set
 bool Catcher::set(const int &propId, const double &value) {
     bool result;
     _mut->lock();
