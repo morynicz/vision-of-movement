@@ -6,6 +6,7 @@
  */
 
 #include "CommandlineParameters.hpp"
+#include "ErrorCodes.hpp"
 #include <boost/program_options.hpp>
 
 void readParameters(const std::string &fileName,
@@ -260,6 +261,9 @@ void readParametersCommandLine(const int &argc, char **argv,
 
     if (vm.count("help")) {
         std::cout << desc << std::endl;
+        cv::Exception ex(USER_TRIGGERED_EXIT, "", __func__, __FILE__,
+                __LINE__);
+        throw ex;
     }
 
     if (vm.count("file_name")) {
