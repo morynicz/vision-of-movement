@@ -20,16 +20,19 @@ VisualOdometer::~VisualOdometer() {
 }
 
 VisualOdometer::VisualOdometer(const VisualOdometer &toCopy) :
-        _horizonHeight(toCopy._horizonHeight), _deadZoneWidth(
-                toCopy._deadZoneWidth), _translationReader(
+        _translationReader(
                 toCopy._translationReader->constructCopy()), _rotationReader(
-                toCopy._rotationReader->constructCopy()) {}
+                toCopy._rotationReader->constructCopy()), _horizonHeight(
+                toCopy._horizonHeight), _deadZoneWidth(
+                toCopy._deadZoneWidth) {
+}
 
-VisualOdometer &VisualOdometer::operator=(const VisualOdometer &toCopy){
-    _horizonHeight=toCopy._horizonHeight;
-    _deadZoneWidth=toCopy._deadZoneWidth;
-    _translationReader=toCopy._translationReader->constructCopy();
-    _rotationReader=toCopy._rotationReader->constructCopy();
+VisualOdometer &VisualOdometer::operator=(
+        const VisualOdometer &toCopy) {
+    _horizonHeight = toCopy._horizonHeight;
+    _deadZoneWidth = toCopy._deadZoneWidth;
+    _translationReader = toCopy._translationReader->constructCopy();
+    _rotationReader = toCopy._rotationReader->constructCopy();
     return *this;
 
 }
