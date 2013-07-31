@@ -119,6 +119,7 @@ class PortReader {
             if (!_output.is_open()) { //FIXME: this is not done well
                 throw "could not open file " + filename;
             }
+            _output<<"u=["<<std::endl;
         }
         /// Functor method for launching thread
         /**
@@ -229,6 +230,7 @@ class PortReader {
         }
 
         ~PortReader() {
+            _output<<"];"<<std::endl;
             _output.close();
         }
 
