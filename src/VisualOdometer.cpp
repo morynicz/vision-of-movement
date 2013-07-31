@@ -1,8 +1,8 @@
-/*
- * VisualOdometer.cpp
+/**
+ * \file VisualOdometer.cpp
  *
- *  Created on: Feb 21, 2013
- *      Author: Michał Orynicz
+ *  \date 21.02.2013
+ *  \author Michał Orynicz
  */
 
 #include "VisualOdometer.hpp"
