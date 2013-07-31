@@ -97,8 +97,8 @@ std::vector<std::list<cv::Point2f> > SmoothFilter::filterFeatures(
 //                                    (b * b + c * c - a * a)
 //                                            / (2 * b * c))
 //                            || _maxLength < a + b)) {
-            if (_maxDeviation < abs(cos1031) || _maxDeviation < abs(cos1073)
-                    || _maxDeviation < abs(cos3173)) {
+            if (_maxDeviation < acos(abs(cos1031)) || _maxDeviation < acos(abs(cos1073))
+                    || _maxDeviation < acos(abs(cos3173))) {
                 toKill[i] = true;
                 ++counter;
 //				std::cerr<<"to kill "<<counter<<" "<<i<<std::endl;
