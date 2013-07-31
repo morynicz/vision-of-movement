@@ -9,6 +9,7 @@
 #define ERRORCODES_HPP_
 
 const int USER_TRIGGERED_EXIT = 1;
+/// Code indicating that camera parameters could not be read.
 const int READ_CAMERA_PARAMETERS_FAILED = -1;
 
 
