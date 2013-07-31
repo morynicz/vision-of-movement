@@ -56,7 +56,7 @@ cv::Point3f BirdsEyeTranslationReader::readTranslation(
     cv::Mat newTransformed;
     cv::Point3f result(0, 0, rotationAngle);
     cv::Mat rotationMatrix = cv::getRotationMatrix2D(_rotationCenter,
-            -rotationAngle * 180 / CV_PI, 1);
+            rotationAngle * 180 / CV_PI, 1);
     int vectorHalf = 0;
     cv::warpPerspective(newFrame, newTransformed, _homography,
             _viewSize, cv::INTER_LINEAR | cv::WARP_INVERSE_MAP);
@@ -101,15 +101,16 @@ std::vector<cv::Point2f> BirdsEyeTranslationReader::computeTranslationVectors(
     std::vector<cv::Point2f> oldFeatures(_trackedFeatures.size()),
             newFeatures(_trackedFeatures.size());
     std::vector<cv::Point2f> newTransformed(newFeatures.size());
+    std::vector<cv::Point2f> oldTransformed(newFeatures.size());
 
     for (unsigned int i = 0; i < result.size(); ++i) { //Highly susceptible to bugs
         oldFeatures[i] = _trackedFeatures[i].front();
         newFeatures[i] = *(++_trackedFeatures[i].begin());
     }
 
-    cv::transform(newFeatures, newTransformed, rotationMatrix);
+    cv::transform(oldFeatures, oldTransformed, rotationMatrix);
     for (unsigned int i = 0; i < result.size(); ++i) {
-        result[i] = newTransformed[i] - oldFeatures[i];
+        result[i] = newFeatures[i] - oldTransformed[i];
     }
 
     return result;
