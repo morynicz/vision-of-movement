@@ -6,10 +6,6 @@
  */
 
 #include "VisualOdometer.hpp"
-#include "TangentRotationReader.hpp"
-#include "ShiThomasFeatureExtractor.hpp"
-#include "LucasCandaePyramidTracker.hpp"
-#include "BirdsEyeTranslationReader.hpp"
 
 const unsigned int DEFAULT_MAX_FEATURES = 500;
 
