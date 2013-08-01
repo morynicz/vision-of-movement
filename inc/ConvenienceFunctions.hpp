@@ -11,7 +11,6 @@
 #include "Catcher.hpp"
 #include "PreparationFunctions.hpp"
 
-
 /// Method compares two cv::Point3f objects in x axis.
 /**
  * Method checks if p1 point has lesser x value than p2
@@ -38,7 +37,6 @@ bool verticalPoint3Compare(cv::Point3f p1, cv::Point3f p2);
  * @param printValues - pass true to pint matrix values
  */
 void printMatrix(const cv::Mat &arg, bool printValues = false);
-
 
 /// Compute mean and variance of a vector
 
@@ -77,10 +75,10 @@ T median(std::vector<T> input) {
     std::nth_element(input.begin(), input.begin() + input.size() / 2,
             input.end());
     if (input.size() % 2) {
-        result = (input[input.size() / 2 - 1] + input[input.size()/2])
-                / 2;
+        result = (input[input.size() / 2 - 1]
+                + input[input.size() / 2]) / 2;
     } else {
-        result = input[input.size()/2 - 1];
+        result = input[input.size() / 2 - 1];
     }
     return result;
 }
@@ -147,6 +145,5 @@ void checkPnPMethodStats(Catcher &capture,
         const double &chessboardHeight, const int & iterations,
         cv::Point3d & mean, cv::Point3d & variance,
         cv::Point3d & median, cv::Point3d &stdDev);
-
 
 #endif /* CONVENIENCEFUNCTIONS_HPP_ */
