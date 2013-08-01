@@ -9,7 +9,6 @@
 #ifndef CATCHER_HPP
 #define CATCHER_HPP
 
-
 ///\brief Error code for inability to open a device
 static const int CATCH_CANNOT_OPEN_DEVICE = -1;
 ///\brief Error code for inability to open a fil
@@ -18,7 +17,7 @@ static const int CATCH_CANNOT_OPEN_FILE = -2;
 ///\brief Class providing ability to catch the most recent frame from 
 /// video stream 
 
-class Catcher: public cv::VideoCapture{
+class Catcher: public cv::VideoCapture {
         cv::Mat _fr; ///< Most recent frame
         boost::mutex *_mut;
 
@@ -53,8 +52,13 @@ class Catcher: public cv::VideoCapture{
         Camera _cam; ///< Object providing the most recent frame
         boost::thread *_thr; ///< thread receiving all the images from camera
 
-        bool retrieve(cv::Mat& image, int channel=0){return false;};
-        bool grab(){return false;}
+        bool retrieve(cv::Mat& image, int channel = 0) {
+            return false;
+        }
+        ;
+        bool grab() {
+            return false;
+        }
     public:
         ///\brief Constructor initialising pointer fields
         Catcher();
