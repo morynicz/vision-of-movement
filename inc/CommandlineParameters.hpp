@@ -103,7 +103,6 @@ void readParametersCommandLine(const int &argc, char **argv,
         std::string &matlabFileName,
         std::string &cameraPositionFilename);
 
-
 /// Function parses command line arguments and sets values to it's arguments
 /// accordingly. Version for video file.
 
@@ -144,5 +143,5 @@ void readParametersCommandLine(const int &argc, char **argv,
         double &lowerMargin, std::string &videoFile, int &verbosity,
         std::string &cameraParametersFilename,
         std::string &matlabFileName,
-        std::string &cameraPositionFilename) ;
+        std::string &cameraPositionFilename);
 #endif /* COMMANDLINEPARAMETERS_HPP_ */
