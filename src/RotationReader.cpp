@@ -12,10 +12,13 @@ RotationReader::RotationReader(const FeatureTracker &tracker,
         const unsigned int &maxFeatures,
         const std::vector<std::list<cv::Point2f> > &trackedFeatures) :
         MovementReader(tracker, extractor, filters, maxFeatures,
-                trackedFeatures) {}
+                trackedFeatures) {
+}
 
 RotationReader::RotationReader(const RotationReader &toCopy) :
-        MovementReader(toCopy) {}
+        MovementReader(toCopy) {
+}
 
-RotationReader::~RotationReader() {}
+RotationReader::~RotationReader() {
+}
 
