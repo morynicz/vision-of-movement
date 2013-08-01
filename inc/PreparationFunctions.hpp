@@ -32,7 +32,7 @@ class ChessboardParameters {
  * Camera parameters connected with it's global position
  * and homography for bird's eye transform
  */
-class CameraSpatialParameters{
+class CameraSpatialParameters {
     public:
         cv::Mat homography; ///< transformation for bird's eye transform
         cv::Mat rtMatrix; ///< transformation from global to camera coordinates
@@ -93,7 +93,8 @@ void calibrateParametersSingleImage(cv::VideoCapture &capture,
  * @param termCriteria - termination criteria for subpixel precission calculations
  * @return
  */
-std::vector<cv::Point2f> getChessboardCorners(cv::VideoCapture &capture,
+std::vector<cv::Point2f> getChessboardCorners(
+        cv::VideoCapture &capture,
         const std::vector<cv::Mat> &rectificationMaps,
         const int &horizon, const int &deadZone,
         const cv::Size &boardSize, const cv::Size &imageSize,
@@ -153,7 +154,6 @@ cv::Mat rtTransformMatrix(const cv::Mat &rot, const cv::Mat &trans);
  */
 cv::Mat invRtTransformMatrix(const cv::Mat& rot,
         const cv::Mat& trans);
-
 
 /// Invert the homogenous coordinates transform matrix
 
