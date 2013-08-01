@@ -175,48 +175,6 @@ void printMatrix(const cv::Mat &arg) {
         }
         std::cerr << "depth: " << depth << std::endl;
     }
-    int channels = arg.channels();/*
-     for (int i = 0; i < arg.rows; ++i) {
-     for (int j = 0; j < arg.cols; ++j) {
-     switch (type) {
-     case CV_8U:
-     std::cerr << (int) arg.at<unsigned char>(i, j);
-     break;
-     case CV_8S:
-     std::cerr << arg.at<char>(i, j);
-     break;
-     case CV_16U:
-     std::cerr << arg.at<unsigned int>(i, j);
-     break;
-     case CV_16S:
-     std::cerr << arg.at<int>(i, j);
-     break;
-     case CV_32S:
-     std::cerr << arg.at<long int>(i, j);
-     break;
-     case CV_32F:
-     if (2 == channels) {
-     std::cerr << arg.at<cv::Point2f>(i, j);
-     } else if (3 == channels) {
-     std::cerr << arg.at<cv::Point3f>(i, j);
-     } else {
-     std::cerr << arg.at<float>(i, j);
-     }
-     break;
-     case CV_64F:
-     if (2 == channels) {
-     std::cerr << arg.at<cv::Point2d>(i, j);
-     } else if (3 == channels) {
-     std::cerr << arg.at<cv::Point3d>(i, j);
-     } else {
-     std::cerr << arg.at<double>(i, j);
-     }
-     break;
-     }
-     std::cerr << " ";
-     }
-     std::cerr << std::endl;
-     }*/
 }
 
 void extractFeatures(const Mat &input, const int& maxCorners,
