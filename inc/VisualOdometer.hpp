@@ -29,6 +29,10 @@
 #include <list>
 #include <cmath>
 
+/**
+ * Class encapsulates reading translation and rotation of camera
+ * with provided readers.
+ */
 class VisualOdometer {
         TranslationReader *_translationReader;
         RotationReader *_rotationReader;
@@ -39,12 +43,26 @@ class VisualOdometer {
                 const TranslationReader &translationReader,
                 const int &horizonHeight, const int &deadZoneWidth);
         VisualOdometer(const VisualOdometer &toCopy);
+        /**
+         * Calculate displacement using previously passed frame and
+         * newFrame.
+         * @param newFrame new frame to read displacement from
+         * @return Translation in x and y axes and rotation in radians
+         * (x,y,alpha)
+         */
         cv::Point3f calculateDisplacement(const cv::Mat &newFrame);
+        /**
+         * Get features tracked by rotation reader
+         * @return Vector of tracked features locations
+         */
         std::vector<std::list<cv::Point2f> > getRotationFeatures() const;
+        /**
+         * Get features tracked by translation reader
+         * @return Vector of tracked features locations
+         */
         std::vector<std::list<cv::Point2f> > getTranslationFeatures() const;
         virtual ~VisualOdometer();
-        VisualOdometer &operator=(
-                const VisualOdometer &toCopy);
+        VisualOdometer &operator=(const VisualOdometer &toCopy);
 };
 
 #endif /* VISUALODOMETER_H_ */
