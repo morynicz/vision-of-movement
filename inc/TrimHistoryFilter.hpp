@@ -1,6 +1,5 @@
-/*
- * \date TrimHistoryFilter.hpp
- *
+/**
+ * \file
  *  \date 30.03.2013
  *  \author Michał Orynicz
  */

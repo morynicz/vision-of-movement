@@ -1,6 +1,5 @@
 /**
- * \file ConvenienceFunctions.hpp
- *
+ * \file
  * \date 5.04.2013
  * \author Michał Orynicz
  */

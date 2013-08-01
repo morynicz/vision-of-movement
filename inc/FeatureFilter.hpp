@@ -1,8 +1,7 @@
 /**
- * \file FeatureFilter.hpp
- *
- *  \date 21.02.2013
- *  \author Michał Orynicz
+ * \file
+ * \date 21.02.2013
+ * \author Michał Orynicz
  */
 
 #ifndef FEATUREFILTER_HPP_

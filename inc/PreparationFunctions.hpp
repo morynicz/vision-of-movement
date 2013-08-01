@@ -1,3 +1,7 @@
+/**
+ * \file
+ * \author Michał Orynicz
+ */
 #ifndef PREPARATION_FUNCTIONS_HPP
 #define PREPARATION_FUNCTIONS_HPP
 

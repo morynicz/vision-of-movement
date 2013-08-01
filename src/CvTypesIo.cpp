@@ -1,8 +1,7 @@
-/*
- * CvTypesIo.cpp
- *
- *  Created on: May 20, 2013
- *      Author: link
+/**
+ * \file
+ *  \date  20.05.2013
+ *  \author Michał Orynicz
  */
 
 #include "CvTypesIo.hpp"

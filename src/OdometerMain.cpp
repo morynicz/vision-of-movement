@@ -1,4 +1,6 @@
-/// @author Michał Orynicz
+/**
+ * \author Michał Orynicz
+ */
 
 #include "VisualOdometer.hpp"
 #include "BirdsEyeTranslationReader.hpp"

@@ -1,8 +1,7 @@
-/*
- * VisualOdometer.h
- *
- *  Created on: Feb 21, 2013
- *      Author: link
+/**
+ * \file
+ * \date 21.02.2013
+ * \author Michał Orynicz
  */
 
 #ifndef VISUALODOMETER_H_

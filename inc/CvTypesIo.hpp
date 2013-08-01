@@ -1,8 +1,7 @@
-/*
- * CvTypesIo.hpp
- *
- *  Created on: May 20, 2013
- *      Author: link
+/**
+ * \file
+ * \date 20.03.2013
+ * \author Michał Orynicz
  */
 
 #ifndef CVTYPESIO_HPP_

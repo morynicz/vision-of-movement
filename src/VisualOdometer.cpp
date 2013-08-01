@@ -1,6 +1,5 @@
 /**
- * \file VisualOdometer.cpp
- *
+ * \file
  *  \date 21.02.2013
  *  \author Michał Orynicz
  */

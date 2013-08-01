@@ -1,8 +1,7 @@
-/*
- * TrimHistoryFilter.cpp
- *
- *  Created on: Mar 30, 2013
- *      Author: link
+/**
+ * \file
+ * \date 30.03.2013
+ * \author Michał Orynicz
  */
 
 #include "TrimHistoryFilter.hpp"

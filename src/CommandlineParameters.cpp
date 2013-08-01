@@ -1,8 +1,7 @@
-/*
- * CommandlineParameters.cpp
- *
- *  Created on: Jun 2, 2013
- *      Author: link
+/**
+ * \file
+ * \date 2.06.2013
+ * \author Michał Orynicz
  */
 
 #include "CommandlineParameters.hpp"

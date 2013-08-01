@@ -1,8 +1,7 @@
-/*
- * MovementReader.cpp
- *
- *  Created on: Mar 16, 2013
- *      Author: link
+/**
+ * \file
+ * \date 16.03.2013
+ * \author Michał Orynicz
  */
 
 #include "MovementReader.hpp"

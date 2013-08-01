@@ -1,8 +1,7 @@
-/*
- * FeatureTracker.cpp
- *
- *  Created on: Feb 21, 2013
- *      Author: link
+/**
+ * \file
+ * \date 21.02.2013
+ * \author Michał Orynicz
  */
 
 #include "FeatureTracker.hpp"

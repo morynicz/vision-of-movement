@@ -1,6 +1,5 @@
 /**
- * \file CommandlineParameters.hpp
- *
+ * \file
  * \date 2.06.2013
  * \author Michał Orynicz
  */

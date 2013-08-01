@@ -1,8 +1,7 @@
-/*
- * PreparationFunctions.cpp
- *
- *  Created on: Apr 5, 2013
- *      Author: link
+/**
+ * \file
+ * \date 5.04.2013
+ * \author Michał Orynicz
  */
 
 #include "PreparationFunctions.hpp"

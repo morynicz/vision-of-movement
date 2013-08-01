@@ -1,8 +1,7 @@
-/*
- * RotationReader.cpp
- *
- *  Created on: Feb 21, 2013
- *      Author: Michał Orynicz
+/**
+ * \file
+ * \file 21.02.2013
+ * \author Michał Orynicz
  */
 
 #include "RotationReader.hpp"

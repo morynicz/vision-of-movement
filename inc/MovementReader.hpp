@@ -1,6 +1,5 @@
 /**
- * \file MovementReader.hpp
- *
+ * \file
  * \date 16.03.2013
  * \author Michał Orynicz
  */
