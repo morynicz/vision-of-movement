@@ -74,15 +74,15 @@ void drawFeatureHistory(cv::Mat &newImage,
         const int &radius) {
     for (unsigned int i = 0; i < featureHistory.size(); ++i) {
         cv::circle(newImage, featureHistory[i].front(), radius,
-                cv::Scalar(100, 0, 100), -1, 8, 0);
+                cv::Scalar::all(255), -1, 8, 0);
         std::list<cv::Point2f>::const_iterator itb =
                 featureHistory[i].begin();
         std::list<cv::Point2f>::const_iterator ite = itb;
         if (!featureHistory.size() < 2) {
             for (ite++; ite != featureHistory[i].end();
                     ++ite, ++itb) {
-                cv::line(newImage, *ite, *itb, CV_RGB(100,0,0), 1,
-                        CV_AA);
+                cv::line(newImage, *ite, *itb, cv::Scalar::all(255),
+                        1, CV_AA);
             }
         }
     }
