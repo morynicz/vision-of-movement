@@ -23,8 +23,8 @@ bool verticalPoint3Compare(cv::Point3f p1, cv::Point3f p2) {
  * Default is false
  */
 void printMatrix(const cv::Mat &arg, bool printValues) {
-    std::cerr << "dims: " << arg.cols << ' ' << arg.rows << std::endl;
-    std::cerr << "chans: " << arg.channels() << std::endl;
+    std::cout << "dims: " << arg.cols << ' ' << arg.rows << std::endl;
+    std::cout << "chans: " << arg.channels() << std::endl;
     int type = arg.depth();
     std::string depth;
     switch (type) {
@@ -50,7 +50,7 @@ void printMatrix(const cv::Mat &arg, bool printValues) {
             depth = "CV_64F";
             break;
     }
-    std::cerr << "depth: " << depth << std::endl;
+    std::cout << "depth: " << depth << std::endl;
 
     if (printValues) {
         std::cerr << arg << std::endl;
