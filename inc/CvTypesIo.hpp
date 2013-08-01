@@ -29,8 +29,7 @@ void operator>>(const cv::FileNode &node, cv::Size &size);
  * @param[in] node - file node in which the termCrit value is stored
  * @param[out] termCrit - value read
  */
-void operator>>(const cv::FileNode &node,
-        cv::TermCriteria &termCrit);
+void operator>>(const cv::FileNode &node, cv::TermCriteria &termCrit);
 
 /// Operator enabling to use cv::Point_<T> with OpenCV persistence
 /// functionality (reading)
@@ -42,10 +41,9 @@ void operator>>(const cv::FileNode &node,
  * @param[out] point - value read
  */
 template<class T>
-void operator>>(const cv::FileNode &node,
-        cv::Point_<T> &point){
-        node[0]>>point.x;
-        node[1]>>point.y;
+void operator>>(const cv::FileNode &node, cv::Point_<T> &point) {
+    node[0] >> point.x;
+    node[1] >> point.y;
 }
 
 /// Operator enabling to use cv::TermCriteria with OpenCV persistence
