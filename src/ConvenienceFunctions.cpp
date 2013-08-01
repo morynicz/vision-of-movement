@@ -53,36 +53,7 @@ void printMatrix(const cv::Mat &arg, bool printValues) {
     std::cout << "depth: " << depth << std::endl;
 
     if (printValues) {
-        std::cerr << arg << std::endl;
-        /* for (int i = 0; i < arg.rows; ++i) {
-         for (int j = 0; j < arg.cols; ++j) {
-         switch (type) {
-         case CV_8U:
-         std::cerr << (int) arg.at<unsigned char>(i, j);
-         break;
-         case CV_8S:
-         std::cerr << arg.at<char>(i, j);
-         break;
-         case CV_16U:
-         std::cerr << arg.at<unsigned short int>(i, j);
-         break;
-         case CV_16S:
-         std::cerr << arg.at<short int>(i, j);
-         break;
-         case CV_32S:
-         std::cerr << arg.at<long int>(i, j);
-         break;
-         case CV_32F:
-         std::cerr << arg.at<float>(i, j);
-         break;
-         case CV_64F:
-         std::cerr << arg.at<double>(i, j);
-         break;
-         }
-         std::cerr << " ";
-         }
-         std::cerr << std::endl;
-         }*/
+        std::cout << arg << std::endl;
     }
 }
 
