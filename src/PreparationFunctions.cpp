@@ -327,8 +327,7 @@ void getHomographyRtMatrixAndRotationCenter(
     p3pcorn[3] = mCorners[(boardSize.height) * boardSize.width - 1];
 //Get rvec and tvec describing where the chessboards first corner lays in cameras coordinate system
     cv::solvePnP(p3pcorn, imgPts, cameraMatrix,
-            distortionCoefficients, rvec, tvec, false, /*CV_ITERATIVE*/
-            CV_ITERATIVE);
+            distortionCoefficients, rvec, tvec, false, CV_ITERATIVE);
 
     cv::Mat rot;
     cv::Rodrigues(rvec, rot);
