@@ -11,9 +11,14 @@ TranslationReader::TranslationReader(const FeatureTracker &tracker,
         const std::list<FeatureFilter*> &filters,
         const unsigned int &maxFeatures,
         const std::vector<std::list<cv::Point2f> > &trackedFeatures) :
-        MovementReader(tracker,extractor,filters,maxFeatures,trackedFeatures){}
+        MovementReader(tracker, extractor, filters, maxFeatures,
+                trackedFeatures) {
+}
 
-TranslationReader::TranslationReader(const TranslationReader& toCopy): MovementReader(toCopy){}
+TranslationReader::TranslationReader(const TranslationReader& toCopy) :
+        MovementReader(toCopy) {
+}
 
-TranslationReader::~TranslationReader() {}
+TranslationReader::~TranslationReader() {
+}
 
