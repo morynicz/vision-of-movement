@@ -49,5 +49,5 @@ MovementReader::~MovementReader() {
 }
 
 std::vector<std::list<cv::Point2f> > MovementReader::getTrackedFeatures() const {
-            return _trackedFeatures;
-        }
+    return _trackedFeatures;
+}
