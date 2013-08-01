@@ -21,23 +21,9 @@ void drawDeadZoneHorizon(cv::Mat image, const int &horizon,
 
 cv::Mat drawTraveledRoute(const std::list<cv::Point3f> &route) {
     cv::Mat result;
-//	cv::Point3f extremes[4];
-
-//	extremes[0] = *std::min_element(route.begin(), route.end(),
-//			horizontalPoint3Compare);
-//	extremes[1] = *std::max_element(route.begin(), route.end(),
-//			horizontalPoint3Compare);
-//
-//	extremes[2] = *std::min_element(route.begin(), route.end(),
-//			verticalPoint3Compare);
-//	extremes[3] = *std::max_element(route.begin(), route.end(),
-//			verticalPoint3Compare);
-
-//	cv::Size mapSize(extremes[1].x - extremes[0].x,
-//			extremes[3].y - extremes[2].y);
-
     cv::Size mapSize(1000, 1000);
-int scale=0.1;
+    int scale = 0.1;
+
     if (0 == mapSize.width) {
         mapSize.width = 1;
     }
@@ -56,19 +42,13 @@ int scale=0.1;
                 (bg->y) * scale + center.y);
         cv::Point2f finish((end->x) * scale + center.x,
                 (end->y) * scale + center.y);
-        //	std::cerr<<start<<" "<<finish<<std::endl;
-        cv::line(result,
-//				cv::Point2f(bg->x - extremes[0].x, bg->y - extremes[2].y),
-//				cv::Point2f(end->x - extremes[0].x, end->y - extremes[2].y),
-                start, finish, CV_RGB(0,0,255), 10, 8);
+        cv::line(result, start, finish, CV_RGB(0,0,255), 10, 8);
 
     }
 
-    cv::Point3f curr = route.back()*scale + center;
+    cv::Point3f curr = route.back() * scale + center;
     cv::Point2f curr2d(curr.x, curr.y);
-//	std::cerr<<"curr "<<curr<<std::endl;
     std::vector<cv::Point2f> preTrans;
-    //std::vector<cv::Point2f> postTrans;
     cv::Mat postTrans;
     preTrans.push_back(
             cv::Point2f(-0.03 * mapSize.width, 0) + curr2d);
@@ -78,12 +58,12 @@ int scale=0.1;
             cv::Point2f(-0.03 * mapSize.width, 0) + curr2d);
 
     cv::Mat rotMat = cv::getRotationMatrix2D(
-            cv::Point2f(curr.x, curr.y), curr.z/scale * 180 / CV_PI, 1);
+            cv::Point2f(curr.x, curr.y), curr.z / scale * 180 / CV_PI,
+            1);
 
     cv::transform(preTrans, postTrans, rotMat);
     cv::Mat out;
     postTrans.convertTo(out, CV_32S);
-//std::cerr<<"out "<<out<<std::endl;
     cv::fillConvexPoly(result, out, CV_RGB(255,0,0), 1, 0);
 
     return result;
