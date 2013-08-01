@@ -126,7 +126,6 @@ class ShiThomasiParameters {
 cv::FileStorage &operator<<(cv::FileStorage &fs,
         const ShiThomasiParameters &shiThomasi);
 
-
 /**
  * Function reads ShiThomasiParameters structure from a file
  * storage
