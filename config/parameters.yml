@@ -1,0 +1,36 @@
+%YAML:1.0
+ShiThomasiParameters:
+   qualityLevel: 5.0000000000000001e-03
+   minDistance: 30.
+   blockSize: 3
+   winSize: [ 5, 5 ]
+   zeroZone: [ -1, -1 ]
+   termCriteria:
+      type: 3
+      maxCount: 40
+      epsilon: 1.0000000000000000e-04
+LucasKanadeParameters:
+   maxLevel: 4
+   flags: 0
+   winSize: [ 11, 11 ]
+   minEigenvalueThresh: 1.0000000000000000e-04
+   maxErrorValue: 400.
+   termCrit:
+      type: 3
+      maxCount: 40
+      epsilon: 1.0000000000000000e-04
+ChessboardParameters:
+   winSize: [ 5, 5 ]
+   zeroZone: [ -1, -1 ]
+   squareSize: 25.
+   height: 10.
+   size: [ 9, 6 ]
+   termCrit:
+      type: 3
+      maxCount: 40
+      epsilon: 1.0000000000000000e-04
+upperMaxFeatures: 100
+lowerMaxFeatures: 100
+maxHistoryLength: 8
+upperMargin: 30.
+lowerMargin: 30.

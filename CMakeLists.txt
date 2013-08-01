@@ -55,3 +55,5 @@ if(BUILD_DOCUMENTATION)
   # IF you do NOT want the documentation to be generated EVERY time you build the project
   # then leave out the 'ALL' keyword from the above command.
 endif()
+
+configure_file(config/parameters.yml ${PROJECT_BINARY_DIR}/defaultParameters.yml COPYONLY)
